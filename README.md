@@ -13,5 +13,6 @@
 #### Download and install Node.js
 #### Open the frontend project with an IDE
 #### In the command line
-##### Use npm builde
+##### Use npm install
+##### Use npm build
 ##### Use npm start
