@@ -17,18 +17,18 @@ namespace CoolJobAPI.Controllers
     [ApiController]
     public class JobsPageController : ControllerBase
     {
-        private readonly JobContext _context;
+        private readonly IJobRepository _jobRepository;
 
-        public JobsPageController(JobContext context)
+        public JobsPageController(IJobRepository jobRepository)
         {
-            _context = context;
+            _jobRepository = jobRepository;
         }
 
         // GET: api/JobsPage/5
         [HttpGet("{page}")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPage(int page)
+        public ActionResult<IEnumerable<Job>> GetJobsByPage(int page)
         {
-            return  _context.GetActualJobs(page);
+            return _jobRepository.GetActualJobs(page).ToList();
         }
     }
 }

@@ -12,13 +12,13 @@ namespace CoolJobAPI.Controllers
     [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class FilterController : ControllerBase
+    public class FilterController : Controller
     {
-        private readonly JobContext _context;
+        private readonly IJobRepository _jobRepository;
 
-        public FilterController(JobContext context)
+        public FilterController(IJobRepository jobRepository)
         {
-            _context = context;
+            _jobRepository = jobRepository;
         }
 
         // GET: api/filter/Type/Contract/1
@@ -26,7 +26,7 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{filterBy}/{filterValue}/{page}")]
         public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            return _context.GetFilteredJobs(filterBy, filterValue, page);
+            return _jobRepository.GetFilteredJobs(filterBy, filterValue, page).ToList();
         }
 
         // GET: api/filter/Type
@@ -34,7 +34,7 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{filterBy}")]
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
-            return _context.GetSpecificFilterValuesByFilterType(filterBy);
+            return _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
+using System.Linq;
 
 namespace CoolJobAPI
 {
@@ -34,9 +35,20 @@ namespace CoolJobAPI
 
 
             services.AddDbContext<JobContext>(opt =>
-                                               opt.UseInMemoryDatabase("JobList")); 
-            services.AddDbContext<FavoriteContext>(opt =>
-                                                opt.UseInMemoryDatabase("FavoriteList"));
+                                               opt.UseInMemoryDatabase("JobList"));
+
+            //services.AddScoped<IJobRepository, JobRepository>();
+            //services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+
+            var allProviderTypes = System.Reflection.Assembly.GetAssembly(typeof(IJobRepository))
+           .GetTypes().Where(t => t.Namespace != null).ToList();
+
+            foreach (var intfc in allProviderTypes.Where(t => t.IsInterface))
+            {
+                var impl = allProviderTypes.FirstOrDefault(c => c.IsClass && intfc.Name.Substring(1) == c.Name);
+                if (impl != null) services.AddScoped(intfc, impl);
+            }
+
             services.AddControllers();
         }
 

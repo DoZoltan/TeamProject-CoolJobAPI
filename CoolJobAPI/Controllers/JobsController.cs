@@ -17,29 +17,29 @@ namespace CoolJobAPI.Controllers
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private readonly JobContext _context;
+        IJobRepository _jobRepository;
 
-        public JobsController(JobContext context)
+        public JobsController(IJobRepository jobRepository)
         {
-            _context = context;
+            _jobRepository = jobRepository;
         }
 
         // GET: api/Jobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
+        public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            if (_context.Jobs.Count() < 1)
+            if (_jobRepository.GetJobs().Count() < 1)
             {
                 LoadJson();
             }
-            return await _context.Jobs.ToListAsync();
+            return _jobRepository.GetJobs().ToList();
         }
 
         // GET: api/Jobs/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(string id)
+        [HttpGet("{jobId}")]
+        public ActionResult<Job> GetJob(string jobId)
         {
-            var job = await _context.Jobs.FindAsync(id);
+            var job = _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
@@ -49,6 +49,7 @@ namespace CoolJobAPI.Controllers
             return job;
         }
 
+        /*
         // PUT: api/Jobs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -79,55 +80,41 @@ namespace CoolJobAPI.Controllers
 
             return NoContent();
         }
+        */
 
         //POST: api/Jobs
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job)
+        public ActionResult<Job> PostJob(Job job)
         {
-            _context.Jobs.Add(job);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (JobExists(job.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            // we need the user id who posted the new advertisement
+            _jobRepository.AddNewJob(job);
             return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
         }
 
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJob(string id)
+        public IActionResult DeleteJob(string jobId)
         {
-            var job = await _context.Jobs.FindAsync(id);
+            var job = _jobRepository.DeleteJobById(jobId);
+
             if (job == null)
             {
                 return NotFound();
             }
 
-            _context.Jobs.Remove(job);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
+        /*
         private bool JobExists(string id)
         {
             return _context.Jobs.Any(e => e.Id == id);
         }
+        */
 
-        private async void LoadJson()
+        private void LoadJson()
         {
             List<Job> jobs;
             using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
@@ -137,10 +124,8 @@ namespace CoolJobAPI.Controllers
             }
             foreach (var job in jobs)
             {
-                _context.Jobs.Add(job);
-              
+                _jobRepository.AddNewJob(job);
             }
-            await _context.SaveChangesAsync();
         }
     }
 }

@@ -12,25 +12,27 @@ namespace CoolJobAPI.Controllers
     [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class FavoritesController : ControllerBase
+    public class FavoritesController : Controller
     {
-        private readonly FavoriteContext _context;
+        private readonly IJobRepository _jobRepository;
 
-        public FavoritesController (FavoriteContext context)
-            {
-            _context = context;
-            }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetFavoriteJobs()
+        public FavoritesController (IJobRepository jobRepository)
         {
-            return await _context.Favorites.ToListAsync();
+            _jobRepository = jobRepository;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetFavoriteJob(string id)
+        // Get favorites by user ID (As a user I want to see all of my favorites)
+        [HttpGet]
+        public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId = 0)
         {
-            var job = await _context.Favorites.FindAsync(id);
+            return _jobRepository.GetFavorites(userId).ToList();
+        }
+
+        // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
+        [HttpGet("{id}")]
+        public ActionResult<Job> GetFavoriteJob(string jobId, int userId = 0)
+        {
+            var job = _jobRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
 
             if (job == null)
             {
@@ -40,49 +42,28 @@ namespace CoolJobAPI.Controllers
             return job;
         }
 
-
+        // Add a new job to the user's favorites
         [HttpPost]
-        public async Task<ActionResult<Job>> PostFavoriteJob(Job job)
+        public ActionResult<Job> PostFavoriteJob(Job job)
         {
-            _context.Favorites.Add(job);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (JobExists(job.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction(nameof(GetFavoriteJob), new { id = job.Id }, job);
+            int userId = 0;
+            _jobRepository.AddToFavorites(job.Id, userId);
+            return CreatedAtAction(nameof(GetFavoriteJob), new { job.Id, userId }, job);
         }
 
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFavoriteJob(string id)
+        // Delete a specific job from the user's favorites
+        [HttpDelete("{jobId}/{userId}")]
+        public IActionResult DeleteFavoriteJob(string jobId, int userId = 0)
         {
-            var job = await _context.Favorites.FindAsync(id);
-            if (job == null)
+            // Get the favorite id by the job and user id
+            var favId = _jobRepository.GetFavId(jobId, userId);
+
+            if (_jobRepository.DeleteFavoriteJob(favId) == null)
             {
                 return NotFound();
             }
-
-            _context.Favorites.Remove(job);
-            await _context.SaveChangesAsync();
-
+            
             return NoContent();
-        }
-
-        private bool JobExists(string id)
-        {
-            return _context.Favorites.Any(e => e.Id == id);
         }
     }
  
