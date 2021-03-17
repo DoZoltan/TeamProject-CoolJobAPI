@@ -16,39 +16,31 @@ namespace CoolJobAPI.Controllers
     {
         private readonly IJobRepository _jobRepository;
 
-        public FavoritesController (IJobRepository jobRepository)
+        public FavoritesController(IJobRepository jobRepository)
         {
             _jobRepository = jobRepository;
         }
 
         // Get favorites by user ID (As a user I want to see all of my favorites)
-        [HttpGet]
+        [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId = 0)
         {
             return _jobRepository.GetFavorites(userId).ToList();
         }
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
-        [HttpGet("{id}")]
+        [HttpGet("{jobId}/{userId}")]
         public ActionResult<Job> GetFavoriteJob(string jobId, int userId = 0)
         {
-            var job = _jobRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
-
-            if (job == null)
-            {
-                return NotFound();
-            }
-
-            return job;
+            return _jobRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
         }
 
         // Add a new job to the user's favorites
         [HttpPost]
-        public ActionResult<Job> PostFavoriteJob(Job job)
+        public ActionResult<Job> PostFavoriteJob(Job job, int userId = 0)
         {
-            int userId = 0;
             _jobRepository.AddToFavorites(job.Id, userId);
-            return CreatedAtAction(nameof(GetFavoriteJob), new { job.Id, userId }, job);
+            return GetFavoriteJob(job.Id, userId);
         }
 
         // Delete a specific job from the user's favorites
