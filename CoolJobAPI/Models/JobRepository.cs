@@ -56,13 +56,13 @@ namespace CoolJobAPI.Models
             return job;
         }
 
-        public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int num)
+        public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
             string correctValue = filterValue.Replace("%20", " ");
 
             // Get the job object what have the specific property (variable) with the specific value
             var filtered = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(filterBy)?.GetValue(job).ToString().ToLower() == correctValue);
-            return filtered.Where((job, i) => i < 10 * num);
+            return filtered.Where((job, i) => i < 10 * pageNum);
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
