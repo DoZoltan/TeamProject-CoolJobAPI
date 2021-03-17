@@ -37,9 +37,6 @@ namespace CoolJobAPI
             services.AddDbContext<JobContext>(opt =>
                                                opt.UseInMemoryDatabase("JobList"));
 
-            //services.AddScoped<IJobRepository, JobRepository>();
-            //services.AddScoped<IFavoriteRepository, FavoriteRepository>();
-
             var allProviderTypes = System.Reflection.Assembly.GetAssembly(typeof(IJobRepository))
            .GetTypes().Where(t => t.Namespace != null).ToList();
 
@@ -59,9 +56,6 @@ namespace CoolJobAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
-           
-            
 
             app.UseHttpsRedirection();
             app.UseRouting();

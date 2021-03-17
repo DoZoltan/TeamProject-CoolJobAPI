@@ -61,14 +61,14 @@ namespace CoolJobAPI.Models
             string correctValue = filterValue.Replace("%20", " ");
 
             // Get the job object what have the specific property (variable) with the specific value
-            var filtered = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(filterBy).GetValue(job).ToString() == correctValue);
+            var filtered = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(filterBy)?.GetValue(job).ToString().ToLower() == correctValue);
             return filtered.Where((job, i) => i < 10 * num);
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
         {
             // Get the unique filter values for the given filter type
-            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(filterBy).GetValue(job).ToString());
+            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(filterBy)?.GetValue(job).ToString());
         }
 
         // Get the favorites for the user
@@ -84,21 +84,9 @@ namespace CoolJobAPI.Models
             Favorite favorite = new Favorite();
             favorite.JobId = jobId;
             favorite.UserId = userId;
-            if (_context.Favorites.Count() > 0)
-            {
-                favorite.FavId = ++_context.Favorites.Last().FavId;
-            }
-            else
-            {
-                favorite.FavId = 1;
-            }
 
             _context.Favorites.Add(favorite);
             _context.SaveChanges();
-
-            Console.WriteLine(_context.Favorites.FirstOrDefault().FavId);
-            Console.WriteLine(_context.Favorites.FirstOrDefault().JobId);
-            Console.WriteLine(_context.Favorites.FirstOrDefault().UserId);
         }
 
         public Favorite DeleteFavoriteJob(int favId)

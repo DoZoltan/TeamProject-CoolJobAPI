@@ -26,7 +26,7 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{filterBy}/{filterValue}/{page}")]
         public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            return _jobRepository.GetFilteredJobs(filterBy, filterValue, page).ToList();
+            return _jobRepository.GetFilteredJobs(filterBy, filterValue.ToLower(), page).ToList();
         }
 
         // GET: api/filter/Type
@@ -34,7 +34,9 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{filterBy}")]
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
-            return _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
+            var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
+            result.Remove("");
+            return result;
         }
     }
 }
