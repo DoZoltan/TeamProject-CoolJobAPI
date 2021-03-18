@@ -1,5 +1,31 @@
 [
 	{
+		"id": "351a62bb-3a28-476c-85c0-f9b19b7c3f49",
+		"type": "Full Time",
+		"url": "https://codecool.com/en/careers/mentor-budapest/",
+		"created_at": "Tue Jan 11 08:11:50 UTC 2021",
+		"company": "CodeCool",
+		"company_url": "https://codecool.com/hu/",
+		"location": "Budapest",
+		"title": "Full-time Instructor/Mentor",
+		"description": "<p><strong>Want to change lives through coding? Become a mentor at Codecool, where we launch hundreds of young people on successful coding careers. Apply now!</strong></p><p>Codecool is a growing network of coding schools in the CEE region. Our mission is to reinvent IT education and solve the ever growing IT talent gap of companies by giving coding carriers for a wide range of people. Codecool is already present in 5 locations, 3 countries: Hungary, Poland, Romania.</p><p>You will be working from Budapest, but your tasks will exceed the city’s and the country’s borders, you will have training, meetings and company-wide conferences in Poland and Romania as well. You will work closely with the local country manager, other mentors from all our locations, and other team members, subcontractors.</p>",
+		"how_to_apply": "<p>Please apply online:\n<a href=\"https://codecool.com/en/careers/mentor-budapest/",
+		"company_logo": "https://m.blog.hu/eu/euroastra/image/fejleszt-.jpg"
+	},
+	{
+		"id": "951a62bb-3a28-476c-85c0-f9b19b7c3f49",
+		"type": "Part Time",
+		"url": "https://codecool.com/hu/blog/megint-kifoztunk-valamit/",
+		"created_at": "Tue Jan 11 08:11:50 UTC 2021",
+		"company": "CodeCool",
+		"company_url": "https://codecool.com/hu/",
+		"location": "Budapest",
+		"title": "Beer tasting /Beer tester",
+		"description": "<p><strong>If you searched your dream job you FIND IT !. Apply now! <span style='font-size:100px;'>&#127867;</span></strong></p><p>Codecool is a growing network and we decided that we will create a special handmade beer for our workers and our students(age after 18) to reward their performance. <span style='font-size:60px;'>&#127866;</span></p>",
+		"how_to_apply": "<p>Please apply online:\n<a href=\"https://codecool.com/hu/blog/megint-kifoztunk-valamit/",
+		"company_logo": "https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/fcfd2974744277.5c38b039f0fce.png"
+	},
+	{
 		"id": "241a62bb-3a28-476c-85c0-f9b19b7c3f49",
 		"type": "Contract",
 		"url": "https://jobs.github.com/positions/241a62bb-3a28-476c-85c0-f9b19b7c3f49",
