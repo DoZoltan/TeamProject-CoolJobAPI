@@ -8,7 +8,7 @@
 
 ### How to use the app?
 #### 1st you need the frontend part of the projet (It written in a React)
-##### Frontend repo url: https://github.com/CodecoolGlobal/ReactApp-CoolJob
+##### Frontend repo url: https://github.com/DoZoltan/ReactApp-CoolJob
 #### Open and start the backend project with an IDE
 #### Download and install Node.js
 #### Open the frontend project with an IDE
