@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace CoolJobAPI.Models
 {
-    interface IUserRepository
+    public interface IUserRepository
     {
+
     }
 }
