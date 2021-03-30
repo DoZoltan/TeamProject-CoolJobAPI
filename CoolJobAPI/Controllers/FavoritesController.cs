@@ -14,32 +14,32 @@ namespace CoolJobAPI.Controllers
     [ApiController]
     public class FavoritesController : Controller
     {
-        private readonly IJobRepository _jobRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
 
-        public FavoritesController(IJobRepository jobRepository)
+        public FavoritesController(IFavoriteRepository favoriteRepository)
         {
-            _jobRepository = jobRepository;
+            _favoriteRepository = favoriteRepository;
         }
 
         // Get favorites by user ID (As a user I want to see all of my favorites)
         [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId = 0)
         {
-            return _jobRepository.GetFavorites(userId).ToList();
+            return _favoriteRepository.GetFavorites(userId).ToList();
         }
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
         [HttpGet("{jobId}/{userId}")]
         public ActionResult<Job> GetFavoriteJob(string jobId, int userId = 0)
         {
-            return _jobRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
+            return _favoriteRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
         }
 
         // Add a new job to the user's favorites
         [HttpPost]
         public ActionResult<Job> PostFavoriteJob(Job job, int userId = 0)
         {
-            _jobRepository.AddToFavorites(job.Id, userId);
+            _favoriteRepository.AddToFavorites(job.Id, userId);
             return GetFavoriteJob(job.Id, userId);
         }
 
@@ -48,9 +48,9 @@ namespace CoolJobAPI.Controllers
         public IActionResult DeleteFavoriteJob(string jobId, int userId = 0)
         {
             // Get the favorite id by the job and user id
-            var favId = _jobRepository.GetFavId(jobId, userId);
+            var favId = _favoriteRepository.GetFavId(jobId, userId);
 
-            if (_jobRepository.DeleteFavoriteJob(favId) == null)
+            if (_favoriteRepository.DeleteFavoriteJob(favId) == null)
             {
                 return NotFound();
             }
