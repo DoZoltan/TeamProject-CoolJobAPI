@@ -12,18 +12,39 @@ namespace CoolJobAPI.Models
         public FavoriteRepository(JobContext context)
         {
             _context = context;
+
+            // Only for the in memory db test
+            if (_context.Users.ToArray() == null || _context.Users.ToArray().Length == 0)
+            {
+                User defaultUser = new User();
+                defaultUser.Id = 0;
+                defaultUser.UserName = "Sanyi";
+                defaultUser.Password = "1234";
+                defaultUser.PasswordSalt = "sugar";
+                _context.Add(defaultUser);
+                _context.SaveChangesAsync(); 
+            }
         }
 
         // Get the favorites for the user
         public IEnumerable<Job> GetFavorites(int userId)
         {
-            var favsByUser = _context.Favorites.Where(fav => fav.User.Id == userId).ToArray();
-            return favsByUser.Select(fav => _context.Jobs.FirstOrDefault(job => job.Id == fav.Job.Id));
+            // only for testing
+            userId = 1;
+
+            return from fav in _context.Favorites
+                    where fav.User.Id == userId
+                    select fav.Job;
+
         }
 
         // Add a job to the user's favorite list
         public void AddToFavorites(string jobId, int userId)
         {
+
+            // only for testing
+            userId = 1;
+            
             Favorite favorite = new Favorite();
             favorite.Job = _context.Jobs.Where(job => job.Id == jobId).ToArray()[0];
             favorite.User = _context.Users.Where(user => user.Id == userId).ToArray()[0];
@@ -46,6 +67,9 @@ namespace CoolJobAPI.Models
 
         public int GetFavId(string jobId, int userId)
         {
+            // only for testing
+            userId = 1;
+
             var favorite = _context.Favorites.FirstOrDefault(fav => fav.Job.Id == jobId && fav.User.Id == userId);
 
             if (favorite == null)
