@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models
     {
         [Key]
         public int FavId { get; set; }
-        public string JobId { get; set; }
-        public int UserId { get; set; }
+        public Job Job { get; set; }
+        public User User { get; set; }
     }
 }
