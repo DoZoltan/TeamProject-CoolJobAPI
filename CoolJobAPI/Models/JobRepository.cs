@@ -32,8 +32,19 @@ namespace CoolJobAPI.Models
             return _context.Jobs.ToList().Where((job, i) => i < 10 * pageNum);
         }
 
+
         public void AddNewJob(Job job)
         {
+
+            // only for testing
+            User defaultUser = new User();
+            defaultUser.Id = 0;
+            defaultUser.UserName = "Sanyi";
+            defaultUser.Password = "1234";
+            defaultUser.PasswordSalt = "sugar";
+            job.User = defaultUser;
+
+
             _context.Add(job);
             try
             {
