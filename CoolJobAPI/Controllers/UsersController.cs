@@ -30,9 +30,9 @@ namespace CoolJobAPI.Controllers
         [HttpDelete("{userName}")]
         public IActionResult DeleteUser(string userName)
         {
-            var user = _userRepository.DeleteUserByName(userName);
+            var isUserExits = _userRepository.DeleteUserByName(userName);
 
-            if (user == null)
+            if (!isUserExits)
             {
                 return NotFound();
             }
