@@ -53,7 +53,7 @@ namespace CoolJobAPI.Models
 
         private User IsUserExists(string userName)
         {
-            return _context.Users.ToList().FirstOrDefault(user => user.Name == userName);
+            return _context.Users.ToList().FirstOrDefault(user => user.UserName == userName);
         }
     }
 }
