@@ -10,7 +10,7 @@ namespace CoolJobAPI.Models
     public class Favorite
     {
         [Key]
-        public int FavId { get; set; }
+        public int Id { get; set; }
         public Job Job { get; set; }
         public User User { get; set; }
     }
