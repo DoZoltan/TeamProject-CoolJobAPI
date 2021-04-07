@@ -7,6 +7,8 @@ namespace CoolJobAPI.Models
 {
     public interface IJobRepository
     {
+        void ClearDB();
+        void LoadJson();
         IEnumerable<Job> GetJobs();
         Job GetJobById(string jobId);
         IEnumerable<Job> GetActualJobs(int pageNum);

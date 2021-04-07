@@ -31,11 +31,13 @@ namespace CoolJobAPI
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                     });
-            }); 
+            });
 
 
-            services.AddDbContext<JobContext>(opt =>
-                                               opt.UseInMemoryDatabase("JobList"));
+            //services.AddDbContext<JobContext>(opt =>
+            //                                   opt.UseInMemoryDatabase("JobList"));
+            services.AddDbContext<JobContext>(options
+                => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             var allProviderTypes = System.Reflection.Assembly.GetAssembly(typeof(IJobRepository))
            .GetTypes().Where(t => t.Namespace != null).ToList();

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
-using System.IO;
-using Newtonsoft.Json;
+
+
 using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
@@ -23,17 +21,24 @@ namespace CoolJobAPI.Controllers
         {
             _jobRepository = jobRepository;
         }
-
-        // GET: api/Jobs
-        [HttpGet]
+        //GET: api/jobs/load
+       [HttpGet("load")]
+        public IActionResult GetLoad()
+        {
+            _jobRepository.ClearDB();
+            if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
+            {
+                _jobRepository.LoadJson();
+            }
+            return NoContent();
+        }
+        //GET: api/Jobs
+       [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            if (_jobRepository.GetJobs().Count() < 1)
-            {
-                LoadJson();
-            }
-            return _jobRepository.GetJobs().ToList();
+            return _jobRepository.GetJobs().ToList(); // ef just in repository Count , ToList
         }
+
 
         // GET: api/Jobs/5
         [HttpGet("{jobId}")]
@@ -114,18 +119,5 @@ namespace CoolJobAPI.Controllers
         }
         */
 
-        private void LoadJson()
-        {
-            List<Job> jobs;
-            using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
-            {
-                string json = r.ReadToEnd();
-                jobs = JsonConvert.DeserializeObject<List<Job>>(json);
-            }
-            foreach (var job in jobs)
-            {
-                _jobRepository.AddNewJob(job);
-            }
-        }
     }
 }

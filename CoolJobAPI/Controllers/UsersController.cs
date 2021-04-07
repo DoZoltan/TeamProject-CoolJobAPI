@@ -22,8 +22,9 @@ namespace CoolJobAPI.Controllers
 
         [HttpPost]
         public ActionResult<bool> PostNewUser(string userName, string password)
-        { 
-            return _userRepository.AddNewUser(userName, password);
+        {
+          //  return Conflict();
+            return _userRepository.AddNewUser(userName, password); // better with status code etc: 201 or 409 conflict if exist
         }
 
 

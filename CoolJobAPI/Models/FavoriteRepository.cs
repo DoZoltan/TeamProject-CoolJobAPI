@@ -17,7 +17,7 @@ namespace CoolJobAPI.Models
             if (_context.Users.ToArray() == null || _context.Users.ToArray().Length == 0)
             {
                 User defaultUser = new User();
-                defaultUser.Id = 0;
+                defaultUser.Id = 1;
                 defaultUser.UserName = "Sanyi";
                 defaultUser.Password = "1234";
                 defaultUser.PasswordSalt = "sugar";
