@@ -2,7 +2,7 @@
 
 namespace CoolJobAPI.Migrations
 {
-    public partial class init : Migration
+    public partial class InitialDBCreation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,6 +13,12 @@ namespace CoolJobAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BirthDate = table.Column<int>(type: "int", nullable: false),
+                    RegistrationDate = table.Column<int>(type: "int", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
