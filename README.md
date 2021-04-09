@@ -19,6 +19,7 @@
 - .Net C#
 - ASP.Net core
 - Microsoft Entity Framework Core
+- Microsoft SQL server
 
 ## How to launch while it is not deployed
 1. Download the project
