@@ -21,24 +21,14 @@ namespace CoolJobAPI.UnitTests
 
         private void CreateContext()
         {
-            User mockUser = new User { Id = 1, Password = "mock", PasswordSalt = "mock", UserName = "mock" };
-            User mockUser2 = new User { Id = 2, Password = "mock", PasswordSalt = "mock", UserName = "mock" };
-            User mockUser3 = new User { Id = 3, Password = "mock", PasswordSalt = "mock", UserName = "mock" };
+            User mockUser = new User { Id = 1, UserName = "mock" };
+            User mockUser2 = new User { Id = 2, UserName = "mock" };
+            User mockUser3 = new User { Id = 3, UserName = "mock" };
 
             Job mockJob = new Job
             {
                 Id = "mock",
-                Company = "mock",
-                Company_Logo = "mock",
-                Company_Url = "mock",
-                Created_At = "mock",
-                Description = "mock",
-                How_To_Apply = "mock",
-                Location = "mock",
-                Title = "mock",
-                Type = "mock",
-                Url = "mock",
-                User = null
+                User = mockUser
             };
 
             Favorite fav = new Favorite { Id = 1, Job = mockJob, User = mockUser2 };
