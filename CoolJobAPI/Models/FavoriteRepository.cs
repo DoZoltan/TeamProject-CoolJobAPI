@@ -26,7 +26,7 @@ namespace CoolJobAPI.Models
         public void AddToFavorites(string jobId, int userId)
         {
             Favorite favorite = new Favorite();
-            favorite.Job = _context.Jobs.Where(job => job.Id == jobId).ToArray()[0];
+            favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
             favorite.User = _context.Users.Where(user => user.Id == userId).ToArray()[0];
 
             _context.Favorites.Add(favorite);
