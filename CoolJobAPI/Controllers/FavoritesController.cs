@@ -39,7 +39,8 @@ namespace CoolJobAPI.Controllers
         [HttpPost]
         public ActionResult<Job> PostFavoriteJob(Job job, int userId = 0)
         {
-            _favoriteRepository.AddToFavorites(job.Id, userId);
+            // Handle if the add procedure was failed
+            var wasSuccessful = _favoriteRepository.AddToFavorites(job.Id, userId);
             return GetFavoriteJob(job.Id, userId);
         }
 
