@@ -27,7 +27,7 @@ namespace CoolJobAPI.Models
         {
             Favorite favorite = new Favorite();
             favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
-            favorite.User = _context.Users.Where(user => user.Id == userId).ToArray()[0];
+            favorite.User = _context.Users.FirstOrDefault(user => user.Id == userId);
 
             _context.Favorites.Add(favorite);
             _context.SaveChanges();
