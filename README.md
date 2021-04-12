@@ -21,6 +21,7 @@
 - Microsoft Entity Framework Core
 - Microsoft SQL server
 - NUnit
+- NSubstitute
 
 ## How to launch while it is not deployed
 1. Download the project
