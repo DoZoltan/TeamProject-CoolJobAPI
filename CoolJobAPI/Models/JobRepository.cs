@@ -105,13 +105,22 @@ namespace CoolJobAPI.Models
 
         public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
+            // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
+            string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
+
+            // Replace the %20 (spaces from the URL) to spaces, and make it case insensitive
             string correctValue = filterValue.Replace("%20", " ").ToLower();
 
-            // Get the job object what have the specific property (variable) with the specific value
+            int correctPageNum = pageNum < 1 ? 1 : pageNum;
+
+            // Get the jobs what have the provided property (filter type)
             // (why is this not working without the .ToList() conversion?)
-            var jobsWithSpecificProperties = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(filterBy) != null);
-            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(filterBy).GetValue(job).ToString().ToLower().Contains(correctValue)); 
-            return filtered.Take(pageNum * 10);
+            var jobsWithSpecificProperties = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(correctType) != null);
+
+            // Get the jobs what have the specific property (variable) with the specific value
+            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue)); 
+            
+            return filtered.Take(correctPageNum * 10);
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
