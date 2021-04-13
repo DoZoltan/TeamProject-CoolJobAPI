@@ -76,7 +76,9 @@ namespace CoolJobAPI.Models
         // Get the jobs in a specific range
         public IEnumerable<Job> GetJobsByRange(int pageNum)
         {
-            return _context.Jobs.Take(pageNum * 10).ToList();
+            int correctPageNum = pageNum < 1 ? 1 : pageNum;
+
+            return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
         public void AddNewJob(Job job)
