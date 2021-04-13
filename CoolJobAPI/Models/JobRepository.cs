@@ -74,7 +74,7 @@ namespace CoolJobAPI.Models
         }
 
         // Get the jobs in a specific range
-        public IEnumerable<Job> GetActualJobs(int pageNum)
+        public IEnumerable<Job> GetJobsByRange(int pageNum)
         {
             return _context.Jobs.Where((job, i) => i < 10 * pageNum).ToList();
         }
