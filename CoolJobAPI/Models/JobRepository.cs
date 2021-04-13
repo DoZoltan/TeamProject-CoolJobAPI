@@ -127,8 +127,11 @@ namespace CoolJobAPI.Models
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
         {
+            // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
+            string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
+
             // Get the unique filter values for the given filter type
-            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(filterBy)?.GetValue(job).ToString());
+            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).ToHashSet();
         }
     }
 }
