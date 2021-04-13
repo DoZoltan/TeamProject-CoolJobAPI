@@ -45,7 +45,6 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
             context.Users.Add(mockUser3);
             context.Users.Add(mockUser4);
 
-
             context.Jobs.Add(mockJob);
             context.Jobs.Add(mockJob2);
 
