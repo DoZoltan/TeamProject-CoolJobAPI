@@ -90,7 +90,7 @@ namespace CoolJobAPI.Models
             }
             catch (DbUpdateException)
             {
-
+                // return 5**
             }
         }
 
@@ -105,7 +105,6 @@ namespace CoolJobAPI.Models
             return job;
         }
 
-        // How to handle if the object/model/entity is not have the provided property name (filterBy value)?
         public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
             // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
@@ -117,13 +116,29 @@ namespace CoolJobAPI.Models
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
             // Get the jobs what have the provided property (filter type)
-            // (why is this not working without the .ToList() conversion?)
-            var jobsWithSpecificProperties = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(correctType) != null);
+            var jobsWithSpecificProperties = _context.Jobs.AsEnumerable().Where(MatchesType(correctType));
 
             // Get the jobs what have the specific property (variable) with the specific value
-            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue)); 
-            
+            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue));
+
             return filtered.Take(correctPageNum * 10);
+        }
+
+        private Func<Job, bool> MatchesType(string correctType)
+        {
+            return job => 
+            {
+                try
+                {
+                    return job.GetType().GetProperty(correctType) != null;
+                }
+                catch (Exception)
+                {
+
+                    return false;
+                }
+                
+            };
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
