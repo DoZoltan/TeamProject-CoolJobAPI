@@ -70,7 +70,6 @@ namespace CoolJobAPI.Models
 
         public Job GetJobById(string jobId)
         {
-            var a = jobId;
             return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
         }
 
