@@ -105,6 +105,7 @@ namespace CoolJobAPI.Models
             return job;
         }
 
+        // How to handle if the object/model/entity is not have the provided property name (filterBy value)?
         public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
             // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
