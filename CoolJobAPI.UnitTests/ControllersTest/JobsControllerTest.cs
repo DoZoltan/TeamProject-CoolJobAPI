@@ -26,8 +26,8 @@ namespace CoolJobAPI.UnitTests
 
         private void CreateContext()
         {
-            Job mockJob = new Job { Id = "mock"};
-            var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "JobDataBase").Options;
+            Job mockJob = new Job { Id = "mockk" };
+            var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "JobControllerDataBase").Options;
             context = new JobContext(DummyOptions);
             context.Jobs.Add(mockJob);
             context.SaveChanges();
@@ -47,8 +47,7 @@ namespace CoolJobAPI.UnitTests
         [Test]
         public void TestGetJobsIfJobsIsEmpty()
         {
-            foreach (var item in context.Jobs) context.Jobs.Remove(item);
-            context.SaveChanges();
+            ClearDB();
             _jobRepository.GetJobs().Returns(context.Jobs);
 
             var result = _jobsController.GetJobs().Value;
@@ -67,6 +66,60 @@ namespace CoolJobAPI.UnitTests
             var result = _jobsController.GetJob("mock1").Value;
 
             Assert.AreEqual(mockJob, result);
+        }
+
+        [Test]
+        public void TestGetJobIfIdIsNotExist()
+        {
+            Job job = null;
+            ClearDB();
+            _jobRepository.GetJobById("mock").Returns(job);
+
+            var result = _jobsController.GetJob("mock");
+
+           // Assert.AreEqual(NotFound(), result);
+            Assert.IsInstanceOf(typeof(NotFoundResult), result.Result);
+        }
+
+        [Test]
+        public void TestDeleteJobNotExistID()
+        {
+            Job job = null;
+            _jobRepository.DeleteJobById("notExist").Returns(job);
+
+            var result = _jobsController.DeleteJob("notExist");
+
+            Assert.IsInstanceOf(typeof(NotFoundResult), result);
+        }
+
+        [Test]
+        public void TestDeleteJobExistID()
+        {
+            Job job = new Job { Id = "exist" };
+            _jobRepository.DeleteJobById("exist").Returns(job);
+
+            var result = _jobsController.DeleteJob("exist");
+
+            Assert.IsInstanceOf(typeof(NoContentResult), result);
+        }
+
+        //[Test]
+        //public void TestPostJobIsSuccess()
+        //{
+        //    Job mockJob = new Job { Id = "mock2" };
+        //    _jobRepository.GetJobById("mock2").Returns(mockJob);
+            
+
+        //    var result = _jobsController.PostJob(mockJob);
+
+        //    Assert.AreEqual(mockJob, result.Value);
+
+        //}
+
+        private void ClearDB()
+        {
+            foreach (var item in context.Jobs) context.Jobs.Remove(item);
+            context.SaveChanges();
         }
     }
 }
