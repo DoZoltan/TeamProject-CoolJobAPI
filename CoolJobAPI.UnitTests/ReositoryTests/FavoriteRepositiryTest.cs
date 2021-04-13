@@ -3,7 +3,7 @@ using CoolJobAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace CoolJobAPI.UnitTests
+namespace CoolJobAPI.UnitTests.RepositoryTests
 {
 
     [TestFixture]
@@ -33,7 +33,7 @@ namespace CoolJobAPI.UnitTests
             Favorite fav2 = new Favorite { Id = 2, Job = mockJob, User = mockUser3 };
             Favorite fav3 = new Favorite { Id = 3, Job = mockJob, User = mockUser3 };
 
-            var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "JobDataBase").Options;
+            var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "FavRepoDataBase").Options;
 
             context = new JobContext(DummyOptions);
             context.Favorites.Add(fav);
