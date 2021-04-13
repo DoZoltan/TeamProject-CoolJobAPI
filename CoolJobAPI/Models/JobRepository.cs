@@ -108,9 +108,9 @@ namespace CoolJobAPI.Models
             string correctValue = filterValue.Replace("%20", " ").ToLower();
 
             // Get the job object what have the specific property (variable) with the specific value
+            // (why is this not working without the .ToList() conversion?)
             var jobsWithSpecificProperties = _context.Jobs.ToList().Where(job => job.GetType().GetProperty(filterBy) != null);
-
-            var filtered = jobsWithSpecificProperties.Where(job => (bool)job.GetType().GetProperty(filterBy).GetValue(job).ToString().ToLower().Contains(correctValue)); 
+            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(filterBy).GetValue(job).ToString().ToLower().Contains(correctValue)); 
             return filtered.Take(pageNum * 10);
         }
 
