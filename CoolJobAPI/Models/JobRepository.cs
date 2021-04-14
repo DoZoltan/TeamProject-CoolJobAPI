@@ -28,6 +28,17 @@ namespace CoolJobAPI.Models
             _context.SaveChanges();     
         }
 
+        public string GetAdminKey()
+        {
+            Dictionary<string,string> adminKey;
+            using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
+            {
+                string json = r.ReadToEnd();
+                adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+            }
+            return adminKey["adminKey"];
+        }
+
         public void LoadJson()
         {
             //only for test
