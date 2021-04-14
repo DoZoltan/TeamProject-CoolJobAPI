@@ -9,6 +9,7 @@ namespace CoolJobAPI.Models
     {
         void ClearDB();
         void LoadJson();
+        string GetAdminKey();
         IEnumerable<Job> GetJobs();
         Job GetJobById(int jobId);
         IEnumerable<Job> GetJobsByRange(int pageNum);
