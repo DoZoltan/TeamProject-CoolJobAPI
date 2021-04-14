@@ -25,7 +25,7 @@ namespace CoolJobAPI.Controllers
        [HttpGet("load/{AdminKey}")]
         public IActionResult GetLoad(string AdminKey)
         {
-            if(AdminKey == "admin12345678") 
+            if(AdminKey == _jobRepository.GetAdminKey()) 
             {
                 _jobRepository.ClearDB();
                 if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
