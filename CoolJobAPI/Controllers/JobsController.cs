@@ -22,13 +22,16 @@ namespace CoolJobAPI.Controllers
             _jobRepository = jobRepository;
         }
         //GET: api/jobs/load
-       [HttpGet("load")]
-        public IActionResult GetLoad()
+       [HttpGet("load/{AdminKey}")]
+        public IActionResult GetLoad(string AdminKey)
         {
-            _jobRepository.ClearDB();
-            if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
+            if(AdminKey == _jobRepository.GetAdminKey()) 
             {
-                _jobRepository.LoadJson();
+                _jobRepository.ClearDB();
+                if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
+                {                    
+                    _jobRepository.LoadJson();
+                }
             }
             return NoContent();
         }
