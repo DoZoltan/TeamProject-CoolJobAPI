@@ -63,9 +63,9 @@ namespace CoolJobAPI.UnitTests.ControllersTest
             Job job = new Job { Type = "favorite" };
             context.Add(job);
             context.SaveChanges();
-            _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
+            _favoriteRepository.GetFavorites(1).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJob(11,1).Value;
+            var result = _favoritesController.GetFavoriteJob(1,1).Value;
 
             Assert.AreEqual(job, result);
         }
