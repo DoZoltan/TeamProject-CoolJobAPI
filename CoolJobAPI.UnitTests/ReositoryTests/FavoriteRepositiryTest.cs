@@ -150,14 +150,14 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         public void TestGetFavId()
         {
             User mockUser5 = new User { Id = 9, UserName = "mock" };
-            Job mockJob5 = new Job { User = mockUser5 }; // the ID will be 5
+            Job mockJob5 = new Job { User = mockUser5 }; // the ID will be 3
             Favorite fav4 = new Favorite { Id = 999, Job = mockJob5, User = mockUser5 };
             context.Favorites.Add(fav4);
             context.SaveChanges();
 
             int userId = 9;
             int expectedResult = 999;
-            int idOfThdJob = 5;
+            int idOfThdJob = 3;
 
             int result = favoriteRepository.GetFavId(idOfThdJob, userId);
 
