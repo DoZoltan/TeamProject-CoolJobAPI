@@ -105,6 +105,7 @@ namespace CoolJobAPI.Models
             return job;
         }
 
+        // How to handle if the object/model/entity value is Null? (if it null then the .GetType() method cause NullReferenceException)
         public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
             // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
@@ -116,29 +117,12 @@ namespace CoolJobAPI.Models
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
             // Get the jobs what have the provided property (filter type)
-            var jobsWithSpecificProperties = _context.Jobs.AsEnumerable().Where(MatchesType(correctType));
+            var jobsWithSpecificProperties = _context.Jobs.AsEnumerable().Where(job => job.GetType().GetProperty(correctType) != null);
 
-            // Get the jobs what have the specific property (variable) with the specific value
+            // Get the jobs what have the specific property with the specific value
             var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue));
 
             return filtered.Take(correctPageNum * 10);
-        }
-
-        private Func<Job, bool> MatchesType(string correctType)
-        {
-            return job => 
-            {
-                try
-                {
-                    return job.GetType().GetProperty(correctType) != null;
-                }
-                catch (Exception)
-                {
-
-                    return false;
-                }
-                
-            };
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
