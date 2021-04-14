@@ -70,14 +70,15 @@ namespace CoolJobAPI.Models
 
         public Job GetJobById(string jobId)
         {
-            var a = jobId;
             return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
         }
 
         // Get the jobs in a specific range
-        public IEnumerable<Job> GetActualJobs(int pageNum)
+        public IEnumerable<Job> GetJobsByRange(int pageNum)
         {
-            return _context.Jobs.Where((job, i) => i < 10 * pageNum).ToList();
+            int correctPageNum = pageNum < 1 ? 1 : pageNum;
+
+            return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
         public void AddNewJob(Job job)
@@ -89,7 +90,7 @@ namespace CoolJobAPI.Models
             }
             catch (DbUpdateException)
             {
-
+                // return 5**
             }
         }
 
@@ -104,19 +105,33 @@ namespace CoolJobAPI.Models
             return job;
         }
 
+        // How to handle if the object/model/entity value is Null? (if it null then the .GetType() method cause NullReferenceException)
         public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
-            string correctValue = filterValue.Replace("%20", " ");
+            // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
+            string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
 
-            // Get the job object what have the specific property (variable) with the specific value
-            var filtered = _context.Jobs.ToList().Where(job => (bool)job.GetType().GetProperty(filterBy)?.GetValue(job).ToString().ToLower().Contains(correctValue)); 
-            return filtered.Where((job, i) => i < 10 * pageNum);
+            // Replace the %20 (spaces from the URL) to spaces, and make it case insensitive
+            string correctValue = filterValue.Replace("%20", " ").ToLower();
+
+            int correctPageNum = pageNum < 1 ? 1 : pageNum;
+
+            // Get the jobs what have the provided property (filter type)
+            var jobsWithSpecificProperties = _context.Jobs.AsEnumerable().Where(job => job.GetType().GetProperty(correctType) != null);
+
+            // Get the jobs what have the specific property with the specific value
+            var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue));
+
+            return filtered.Take(correctPageNum * 10);
         }
 
         public IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy)
         {
+            // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
+            string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
+
             // Get the unique filter values for the given filter type
-            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(filterBy)?.GetValue(job).ToString());
+            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).ToHashSet();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models
         void LoadJson();
         IEnumerable<Job> GetJobs();
         Job GetJobById(string jobId);
-        IEnumerable<Job> GetActualJobs(int pageNum);
+        IEnumerable<Job> GetJobsByRange(int pageNum);
         void AddNewJob(Job job);
         Job DeleteJobById(string id);
         IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int num);
