@@ -26,7 +26,7 @@ namespace CoolJobAPI.UnitTests.ControllersTest
 
         private void CreateContext()
         {
-            Favorite mockFavorite = new Favorite { Id = 1 };
+            Favorite mockFavorite = new Favorite { Id = 11 };
             var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "FavControllerDataBase").Options;
             context = new JobContext(DummyOptions);
             context.Favorites.Add(mockFavorite);
@@ -36,12 +36,12 @@ namespace CoolJobAPI.UnitTests.ControllersTest
         [Test]
         public void TestGetFavoriteJobsSuccess()
         {
-            Job job = new Job { Id = "mocked" };
+            Job job = new Job { Title = "mocked" };
             context.Add(job);
             context.SaveChanges();
-            _favoriteRepository.GetFavorites(1).Returns(context.Jobs);
+            _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJobs(1).Value;
+            var result = _favoritesController.GetFavoriteJobs(11).Value;
 
             Assert.AreEqual(context.Jobs.ToList(), result);
         }
@@ -60,12 +60,12 @@ namespace CoolJobAPI.UnitTests.ControllersTest
         [Test]
         public void TestGetFavoriteJobIfIdExist()
         {
-            Job job = new Job { Id = "favorite" };
+            Job job = new Job { Type = "favorite" };
             context.Add(job);
             context.SaveChanges();
-            _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
+            _favoriteRepository.GetFavorites(1).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJob("favorite",11).Value;
+            var result = _favoritesController.GetFavoriteJob(1,1).Value;
 
             Assert.AreEqual(job, result);
         }
@@ -76,7 +76,7 @@ namespace CoolJobAPI.UnitTests.ControllersTest
             ClearDB();
             _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJob("favorite", 11).Value;
+            var result = _favoritesController.GetFavoriteJob(2, 11).Value;
 
             Assert.AreEqual(null, result);
         }
@@ -84,11 +84,11 @@ namespace CoolJobAPI.UnitTests.ControllersTest
         [Test]
         public void TestDeleteFavoriteJobIfIdExist()
         {
-            Job job = new Job { Id = "exist1" };
-            _favoriteRepository.GetFavId("exist1", 11).Returns(11);
+            Job job = new Job { Title = "exist1" };
+            _favoriteRepository.GetFavId(2, 11).Returns(11);
             _favoriteRepository.DeleteFavoriteJob(11).Returns(new Favorite());
 
-            var result = _favoritesController.DeleteFavoriteJob("exist1",11);
+            var result = _favoritesController.DeleteFavoriteJob(2,11);
 
             Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
@@ -97,10 +97,10 @@ namespace CoolJobAPI.UnitTests.ControllersTest
         public void TestDeleteFavoriteJobIfIdNotExist()
         {
             Favorite favorite = null;
-            _favoriteRepository.GetFavId("notExist", 11).Returns(11);
+            _favoriteRepository.GetFavId(20, 11).Returns(11);
             _favoriteRepository.DeleteFavoriteJob(11).Returns(favorite);
 
-            var result = _favoritesController.DeleteFavoriteJob("exist1", 11);
+            var result = _favoritesController.DeleteFavoriteJob(20, 11);
 
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }

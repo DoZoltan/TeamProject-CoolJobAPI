@@ -25,18 +25,18 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
             var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "JobRepoDataBase").Options;
             context = new JobContext(DummyOptions);
 
-            Job mockJob = new Job { Id = "mock", Location = "Debrecen" };
-            Job mockJob2 = new Job { Id = "mock2", Location = "Debrecen" };
-            Job mockJob3 = new Job { Id = "mock3", Location = "Budapest" };
-            Job mockJob4 = new Job { Id = "mock4", Location = "Budapest" };
-            Job mockJob5 = new Job { Id = "mock5", Location = "Miskolc" };
-            Job mockJob6 = new Job { Id = "mock6", Location = "Budapest" };
-            Job mockJob7 = new Job { Id = "mock7", Location = "Miskolc" };
-            Job mockJob8 = new Job { Id = "mock8", Location = "Pécs" };
-            Job mockJob9 = new Job { Id = "mock9", Location = "Pécs" };
-            Job mockJob10 = new Job { Id = "mock10", Location = "Gödöllő" };
-            Job mockJob11 = new Job { Id = "mock11", Location = "Gödöllő" };
-            Job mockJob12 = new Job { Id = "mock12", Location = "Gödöllő" };
+            Job mockJob = new Job { Location = "Debrecen" };
+            Job mockJob2 = new Job { Location = "Debrecen" };
+            Job mockJob3 = new Job { Location = "Budapest" };
+            Job mockJob4 = new Job { Location = "Budapest" };
+            Job mockJob5 = new Job { Location = "Miskolc" };
+            Job mockJob6 = new Job { Location = "Budapest" };
+            Job mockJob7 = new Job { Location = "Miskolc" };
+            Job mockJob8 = new Job { Location = "Pécs" };
+            Job mockJob9 = new Job { Location = "Pécs" };
+            Job mockJob10 = new Job { Location = "Gödöllő" };
+            Job mockJob11 = new Job { Location = "Gödöllő" };
+            Job mockJob12 = new Job { Location = "Gödöllő" };
 
             context.Jobs.Add(mockJob);
             context.Jobs.Add(mockJob2);
@@ -67,9 +67,9 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         [Test] //GetJobById() should return a specific job what was added to the database previously
         public void TestGetJobById()
         {
-            string expectedJobId = "mock";
+            int expectedJobId = 1;
 
-            var result = jobRepository.GetJobById("mock");
+            var result = jobRepository.GetJobById(1);
 
             Assert.AreEqual(expectedJobId, result.Id);
         }
@@ -77,7 +77,7 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         [Test] //GetJobById() should return null if the provided job id is wrong
         public void TestGetJobByIdIfTheJobIdNotExists()
         {
-            var result = jobRepository.GetJobById("sock");
+            var result = jobRepository.GetJobById(111111);
 
             Assert.AreEqual(null, result);
         }
@@ -118,20 +118,19 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         [Test] //DeleteJobById() should return the job what was deleted
         public void TestDeleteJobById()
         {
-            Job mockJob13 = new Job { Id = "mock13" };
+            Job mockJob13 = new Job { Location = "mock" }; // the ID will be 13
             context.Jobs.Add(mockJob13);
             context.SaveChanges();
-            string expectedJobId = "mock13";
 
-            string result = jobRepository.DeleteJobById("mock13").Id;
+            var result = jobRepository.DeleteJobById(13);
 
-            Assert.AreEqual(expectedJobId, result);
+            Assert.AreEqual(mockJob13, result);
         }
 
         [Test] //DeleteJobById() should return null if the provided id is wrong
         public void TestDeleteJobByIdIfJobIdIsNotExists()
         {
-            var result = jobRepository.DeleteJobById("sock");
+            var result = jobRepository.DeleteJobById(99999);
 
             Assert.AreEqual(null, result);
         }

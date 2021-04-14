@@ -26,8 +26,8 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
             User mockUser3 = new User { Id = 3, UserName = "mock" };
             User mockUser4 = new User { Id = 4, UserName = "mock" };
 
-            Job mockJob = new Job { Id = "mock", User = mockUser };
-            Job mockJob2 = new Job { Id = "aNewFav", User = mockUser };
+            Job mockJob = new Job { User = mockUser };
+            Job mockJob2 = new Job { User = mockUser };
 
             Favorite fav = new Favorite { Id = 1, Job = mockJob, User = mockUser2 };
             Favorite fav2 = new Favorite { Id = 2, Job = mockJob, User = mockUser3 };
@@ -101,7 +101,7 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         {
             int userId = 4;
             int expectedCollectionSize = 1;
-            string theIdOfTheSelectedJob = "aNewFav";
+            int theIdOfTheSelectedJob = 1;
 
             favoriteRepository.AddToFavorites(theIdOfTheSelectedJob, userId);
 
@@ -115,7 +115,7 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         {
             int nonExistedUserId = 40;
             bool expectedResult = false;
-            string theIdOfTheSelectedJob = "aNewFav";
+            int theIdOfTheSelectedJob = 1;
 
             var result = favoriteRepository.AddToFavorites(theIdOfTheSelectedJob, nonExistedUserId);
 
@@ -150,14 +150,14 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         public void TestGetFavId()
         {
             User mockUser5 = new User { Id = 9, UserName = "mock" };
-            Job mockJob5 = new Job { Id = "tryToGetId", User = mockUser5 };
+            Job mockJob5 = new Job { User = mockUser5 }; // the ID will be 3
             Favorite fav4 = new Favorite { Id = 999, Job = mockJob5, User = mockUser5 };
             context.Favorites.Add(fav4);
             context.SaveChanges();
 
             int userId = 9;
             int expectedResult = 999;
-            string idOfThdJob = "tryToGetId";
+            int idOfThdJob = 3;
 
             int result = favoriteRepository.GetFavId(idOfThdJob, userId);
 
@@ -169,7 +169,7 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         {
             int userId = 77;
             int expectedResult = -1;
-            string idOfThdJob = "tryToGetId";
+            int idOfThdJob = 5;
 
             int result = favoriteRepository.GetFavId(idOfThdJob, userId);
 

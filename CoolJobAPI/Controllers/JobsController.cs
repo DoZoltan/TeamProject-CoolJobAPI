@@ -42,7 +42,7 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/Jobs/5
         [HttpGet("{jobId}")]
-        public ActionResult<Job> GetJob(string jobId)
+        public ActionResult<Job> GetJob(int jobId)
         {
             var job = _jobRepository.GetJobById(jobId);
 
@@ -100,7 +100,7 @@ namespace CoolJobAPI.Controllers
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteJob(string jobId)
+        public IActionResult DeleteJob(int jobId)
         {
             var job = _jobRepository.DeleteJobById(jobId);
 

@@ -19,20 +19,12 @@ namespace CoolJobAPI.Models
 
         public void ClearDB()
         {
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Jobs NOCHECK CONSTRAINT ALL");
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Users NOCHECK CONSTRAINT ALL");
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Favorites NOCHECK CONSTRAINT ALL");
-            //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE [Users]");
-            //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE [Favorites]");        
-            //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE [Jobs]");
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Jobs CHECK CONSTRAINT ALL");
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Users CHECK CONSTRAINT ALL");
-            //_context.Database.ExecuteSqlRaw("ALTER TABLE Favorites CHECK CONSTRAINT ALL");
-
             foreach (var entity in _context.Jobs)
                 _context.Jobs.Remove(entity);
             foreach (var entity in _context.Users)
                 _context.Users.Remove(entity);
+            foreach (var entity in _context.Favorites)
+                _context.Favorites.Remove(entity);
             _context.SaveChanges();     
         }
 
@@ -47,11 +39,18 @@ namespace CoolJobAPI.Models
             }
             User user = new User
             {
-                UserName = "Sanyi",
-                Password = "1234",
+                UserName = "Admin",
+                FirstName = "Admin",
+                LastName = "Admin",
+                Email = "kumkvatmailcool@gmail.com",
+                ProfilePicture = "picture",
+                BirthDate = DateTime.Now,
+                RegistrationDate = DateTime.Now,
+                Password = "admin1234",
                 PasswordSalt = "sugar",
             }; // just for try to use user for jobs
-            _context.Add(user);
+
+        _context.Add(user);
 
             foreach (var job in jobs)
             {
@@ -68,7 +67,7 @@ namespace CoolJobAPI.Models
             return _context.Jobs;
         }
 
-        public Job GetJobById(string jobId)
+        public Job GetJobById(int jobId)
         {
             return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
         }
@@ -94,7 +93,7 @@ namespace CoolJobAPI.Models
             }
         }
 
-        public Job DeleteJobById(string jobId)
+        public Job DeleteJobById(int jobId)
         {
             var job = _context.Jobs.ToList().FirstOrDefault(job => job.Id == jobId);
             if (job != null)

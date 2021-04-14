@@ -26,7 +26,7 @@ namespace CoolJobAPI.UnitTests
 
         private void CreateContext()
         {
-            Job mockJob = new Job { Id = "mockk" };
+            Job mockJob = new Job { Title = "mockk" };
             var DummyOptions = new DbContextOptionsBuilder<JobContext>().UseInMemoryDatabase(databaseName: "JobControllerDataBase").Options;
             context = new JobContext(DummyOptions);
             context.Jobs.Add(mockJob);
@@ -58,12 +58,12 @@ namespace CoolJobAPI.UnitTests
         [Test]
         public void TestGetJobIfIdIsExist()
         {
-            Job mockJob = new Job { Id = "mock1" };
+            Job mockJob = new Job { Title = "mock1" };
             context.Jobs.Add(mockJob);
             context.SaveChanges();
-            _jobRepository.GetJobById("mock1").Returns(mockJob);
+            _jobRepository.GetJobById(2).Returns(mockJob);
 
-            var result = _jobsController.GetJob("mock1").Value;
+            var result = _jobsController.GetJob(2).Value;
 
             Assert.AreEqual(mockJob, result);
         }
@@ -73,9 +73,9 @@ namespace CoolJobAPI.UnitTests
         {
             Job job = null;
             ClearDB();
-            _jobRepository.GetJobById("mock").Returns(job);
+            _jobRepository.GetJobById(2).Returns(job);
 
-            var result = _jobsController.GetJob("mock");
+            var result = _jobsController.GetJob(2);
 
            // Assert.AreEqual(NotFound(), result);
             Assert.IsInstanceOf(typeof(NotFoundResult), result.Result);
@@ -85,9 +85,9 @@ namespace CoolJobAPI.UnitTests
         public void TestDeleteJobNotExistID()
         {
             Job job = null;
-            _jobRepository.DeleteJobById("notExist").Returns(job);
+            _jobRepository.DeleteJobById(100).Returns(job);
 
-            var result = _jobsController.DeleteJob("notExist");
+            var result = _jobsController.DeleteJob(100);
 
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
@@ -95,10 +95,10 @@ namespace CoolJobAPI.UnitTests
         [Test]
         public void TestDeleteJobExistID()
         {
-            Job job = new Job { Id = "exist" };
-            _jobRepository.DeleteJobById("exist").Returns(job);
+            Job job = new Job { Title = "exist" };
+            _jobRepository.DeleteJobById(2).Returns(job);
 
-            var result = _jobsController.DeleteJob("exist");
+            var result = _jobsController.DeleteJob(2);
 
             Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
