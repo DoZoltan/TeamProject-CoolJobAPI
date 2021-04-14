@@ -10,8 +10,8 @@ namespace CoolJobAPI.Models
     public class Job
     {
         [Key]
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        //[JsonPropertyName("id")]
+        public int Id { get; set; }
         [JsonPropertyName("type")]
         public string Type { get; set; }
         [JsonPropertyName("url")]

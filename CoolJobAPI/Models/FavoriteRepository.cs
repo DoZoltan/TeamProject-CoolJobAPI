@@ -23,7 +23,7 @@ namespace CoolJobAPI.Models
         }
 
         // Add a job to the user's favorite list
-        public bool AddToFavorites(string jobId, int userId)
+        public bool AddToFavorites(int jobId, int userId)
         {
             Favorite favorite = new Favorite();
             favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
@@ -51,7 +51,7 @@ namespace CoolJobAPI.Models
             return fav;
         }
 
-        public int GetFavId(string jobId, int userId)
+        public int GetFavId(int jobId, int userId)
         {
             var favorite = _context.Favorites.FirstOrDefault(fav => fav.Job.Id == jobId && fav.User.Id == userId);
 
