@@ -32,3 +32,5 @@
      - Type Update-Database, and press Enter
 4. Start the application with F5
 5. Open and start the frontend project (you can find the steps of it at its repo)
+
+### Project kanban board -> https://github.com/DoZoltan/TeamProject-CoolJobAPI/projects/1 
