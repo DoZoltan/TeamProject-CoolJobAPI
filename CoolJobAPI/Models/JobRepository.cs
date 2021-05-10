@@ -65,8 +65,8 @@ namespace CoolJobAPI.Models
 
             foreach (var job in jobs)
             {
-                job.User = user;
-                AddNewJob(job);
+                //job.User = user;
+                AddNewJob(job, user.Id);
                 
             }
             _context.SaveChanges();
@@ -91,8 +91,11 @@ namespace CoolJobAPI.Models
             return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
-        public void AddNewJob(Job job)
+        public void AddNewJob(Job job, int userId)
         {
+            var user = _context.Users.ToList().FirstOrDefault(user => user.Id == userId);
+            job.User = user;
+
             _context.Add(job);
             try
             {

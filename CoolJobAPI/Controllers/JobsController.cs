@@ -89,14 +89,14 @@ namespace CoolJobAPI.Controllers
             return NoContent();
         }
         */
-
+  
         //POST: api/Jobs
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<Job> PostJob(Job job)
+        public ActionResult<Job> PostJob(Job job, int userId)
         {
             // we need the user id who posted the new advertisement
-            _jobRepository.AddNewJob(job);
+            _jobRepository.AddNewJob(job,userId);
             return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
         }
 
