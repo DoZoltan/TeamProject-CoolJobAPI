@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
     public class FavoritesController : Controller

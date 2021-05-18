@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
     public class JobsController : ControllerBase
@@ -21,6 +20,7 @@ namespace CoolJobAPI.Controllers
         {
             _jobRepository = jobRepository;
         }
+
         //GET: api/jobs/load
        [HttpGet("load/{AdminKey}")]
         public IActionResult GetLoad(string AdminKey)
@@ -96,7 +96,7 @@ namespace CoolJobAPI.Controllers
         public ActionResult<Job> PostJob(Job job, int userId)
         {
             // we need the user id who posted the new advertisement
-            _jobRepository.AddNewJob(job,userId);
+            _jobRepository.AddNewJob(job, userId);
             return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
         }
 
