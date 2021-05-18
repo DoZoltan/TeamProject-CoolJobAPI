@@ -17,10 +17,16 @@ namespace CoolJobAPI.Models
         // Get the favorites for the user
         public IEnumerable<Job> GetFavorites(int userId)
         {
-            return from fav in _context.Favorites
-                    where fav.User.Id == userId
-                    select fav.Job;
+            return _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job);
         }
+        
+        /*
+        public Job GetFavoriteJob(int jobId, int userId)
+        {
+            return _context.Favorites.FirstOrDefault(job => job.Id == jobId);
+        }
+        */
+        
 
         // Add a job to the user's favorite list
         public bool AddToFavorites(int jobId, int userId)
