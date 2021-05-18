@@ -96,20 +96,24 @@ namespace CoolJobAPI.Models
             return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
-        public void AddNewJob(Job job, int userId)
+        public bool AddNewJob(Job job, int userId)
         {
             var user = _context.Users.ToList().FirstOrDefault(user => user.Id == userId);
             job.User = user;
 
-            _context.Add(job);
+            bool addWasSuccessfull = true;
+            
             try
             {
+                _context.Add(job);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                // return 5**
+                addWasSuccessfull = false;
             }
+
+            return addWasSuccessfull;
         }
 
         public Job DeleteJobById(int jobId)
