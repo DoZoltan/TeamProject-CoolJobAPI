@@ -28,7 +28,7 @@ namespace CoolJobAPI.Controllers
             if (AdminKey == _jobRepository.GetAdminKey()) 
             {
                 _jobRepository.ClearDB();
-                if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
+                if (_jobRepository.GetNumberOfTheJobs() < 1)
                 {                    
                     _jobRepository.LoadJson();
                 }
@@ -36,10 +36,10 @@ namespace CoolJobAPI.Controllers
             return NoContent();
         }
         //GET: api/Jobs
-       [HttpGet]
+        [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            return Ok(_jobRepository.GetJobs().ToList()); // ef just in repository Count , ToList
+            return Ok(_jobRepository.GetJobs().ToList());
             // NotFound() if the list is empty?
         }
 
