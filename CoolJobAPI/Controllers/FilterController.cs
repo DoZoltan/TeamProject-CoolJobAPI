@@ -38,8 +38,8 @@ namespace CoolJobAPI.Controllers
         [Route("{filterBy}")]
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
-            var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
-            result.Remove("");
+            var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy);
+            //result.Remove("");
             return Ok(result);
             // NotFound() if the list is empty?
         }
