@@ -25,7 +25,7 @@ namespace CoolJobAPI.Controllers
        [HttpGet("load/{AdminKey}")]
         public IActionResult GetLoad(string AdminKey)
         {
-            if(AdminKey == _jobRepository.GetAdminKey()) 
+            if (AdminKey == _jobRepository.GetAdminKey()) 
             {
                 _jobRepository.ClearDB();
                 if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
@@ -39,7 +39,8 @@ namespace CoolJobAPI.Controllers
        [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            return _jobRepository.GetJobs().ToList(); // ef just in repository Count , ToList
+            return Ok(_jobRepository.GetJobs().ToList()); // ef just in repository Count , ToList
+            // NotFound() if the list is empty?
         }
 
 
@@ -54,7 +55,7 @@ namespace CoolJobAPI.Controllers
                 return NotFound();
             }
 
-            return job;
+            return Ok(job);
         }
 
         /*
@@ -95,7 +96,7 @@ namespace CoolJobAPI.Controllers
         [HttpPost]
         public ActionResult<Job> PostJob(Job job, int userId)
         {
-            // we need the user id who posted the new advertisement
+            // Handle if the add procedure was failed
             _jobRepository.AddNewJob(job, userId);
             return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
         }
@@ -112,6 +113,7 @@ namespace CoolJobAPI.Controllers
                 return NotFound();
             }
 
+            // Should it return with the deleted job?
             return NoContent();
         }
 

@@ -22,20 +22,20 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/filter/Type/Contract/1
         [Route("{filterBy}/{filterValue}/{page}")]
-        [HttpGet("{filterBy}/{filterValue}/{page}")]
         public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            return _jobRepository.GetFilteredJobs(filterBy, filterValue.ToLower(), page).ToList();
+            return Ok(_jobRepository.GetFilteredJobs(filterBy, filterValue.ToLower(), page).ToList());
+            // NotFound() if the list is empty?
         }
 
         // GET: api/filter/Type
         [Route("{filterBy}")]
-        [HttpGet("{filterBy}")]
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
             var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
             result.Remove("");
-            return result;
+            return Ok(result);
+            // NotFound() if the list is empty?
         }
     }
 }
