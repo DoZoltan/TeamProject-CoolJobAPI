@@ -25,13 +25,13 @@ namespace CoolJobAPI.Controllers
         public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId)
         {
             var favorites = _favoriteRepository.GetFavorites(userId);
-
-            if (favorites == null)
+            
+            if (favorites == null || favorites.ToList().Count == 0)
             {
                 return NoContent();
             }
 
-            return Ok(_favoriteRepository.GetFavorites(userId));
+            return Ok(favorites);
         }
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
