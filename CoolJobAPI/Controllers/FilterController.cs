@@ -26,7 +26,7 @@ namespace CoolJobAPI.Controllers
         {
             var filtered = _jobRepository.GetFilteredJobs(filterBy, filterValue, page);
 
-            if (filtered == null || filtered.ToList().Count == 0)
+            if (filtered == null || !filtered.Any())
             {
                 return NoContent();
             }
@@ -40,7 +40,7 @@ namespace CoolJobAPI.Controllers
         {
             var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy);
 
-            if (result == null || result.ToList().Count == 0)
+            if (result == null || !result.Any())
             {
                 return NoContent();
             }

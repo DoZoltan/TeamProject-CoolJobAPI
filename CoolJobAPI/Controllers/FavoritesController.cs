@@ -26,7 +26,7 @@ namespace CoolJobAPI.Controllers
         {
             var favorites = _favoriteRepository.GetFavorites(userId);
             
-            if (favorites == null || favorites.ToList().Count == 0)
+            if (favorites == null || !favorites.Any())
             {
                 return NoContent();
             }
