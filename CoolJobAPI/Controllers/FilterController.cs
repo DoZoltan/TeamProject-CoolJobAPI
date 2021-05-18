@@ -39,9 +39,13 @@ namespace CoolJobAPI.Controllers
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
             var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy);
-            //result.Remove("");
+
+            if (result == null || result.ToList().Count == 0)
+            {
+                return NoContent();
+            }
+            
             return Ok(result);
-            // NotFound() if the list is empty?
         }
     }
 }
