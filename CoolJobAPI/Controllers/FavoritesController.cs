@@ -24,8 +24,14 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId)
         {
-            // Should we check if there is no any favorite for the user and return with NoContent()?
-            return Ok(_favoriteRepository.GetFavorites(userId).ToList());
+            var favorites = _favoriteRepository.GetFavorites(userId);
+
+            if (favorites == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(_favoriteRepository.GetFavorites(userId));
         }
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
