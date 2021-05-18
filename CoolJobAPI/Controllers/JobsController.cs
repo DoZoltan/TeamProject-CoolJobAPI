@@ -39,8 +39,14 @@ namespace CoolJobAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            return Ok(_jobRepository.GetJobs().ToList());
-            // NotFound() if the list is empty?
+            var jobs = _jobRepository.GetJobs();
+
+            if (jobs == null || !jobs.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(jobs);
         }
 
 
