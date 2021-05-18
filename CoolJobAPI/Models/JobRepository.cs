@@ -144,7 +144,7 @@ namespace CoolJobAPI.Models
             string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
 
             // Get the unique filter values for the given filter type
-            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).ToHashSet();
+            return _context.Jobs.AsEnumerable().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).Distinct();
         }
     }
 }
