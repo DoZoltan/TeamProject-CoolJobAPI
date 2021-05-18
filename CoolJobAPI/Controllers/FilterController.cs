@@ -24,8 +24,14 @@ namespace CoolJobAPI.Controllers
         [Route("{filterBy}/{filterValue}/{page}")]
         public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            return Ok(_jobRepository.GetFilteredJobs(filterBy, filterValue.ToLower(), page).ToList());
-            // NotFound() if the list is empty?
+            var filtered = _jobRepository.GetFilteredJobs(filterBy, filterValue, page);
+
+            if (filtered == null || filtered.ToList().Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(filtered);
         }
 
         // GET: api/filter/Type
