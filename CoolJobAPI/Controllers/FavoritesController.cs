@@ -38,7 +38,14 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{jobId}/{userId}")]
         public ActionResult<Job> GetFavoriteJob(int jobId, int userId)
         {
-            return Ok(_favoriteRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId));
+            var favoriteJob = _favoriteRepository.GetFavoriteJob(jobId, userId);
+
+            if (favoriteJob == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(favoriteJob);
         }
 
         // Add a new job to the user's favorites
