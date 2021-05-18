@@ -78,6 +78,11 @@ namespace CoolJobAPI.Models
             return _context.Jobs;
         }
 
+        public int GetNumberOfTheJobs()
+        {
+            return _context.Jobs.Count();
+        }
+
         public Job GetJobById(int jobId)
         {
             return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
