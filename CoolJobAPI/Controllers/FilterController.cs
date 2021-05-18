@@ -11,7 +11,7 @@ namespace CoolJobAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilterController : Controller
+    public class FilterController : ControllerBase
     {
         private readonly IJobRepository _jobRepository;
 

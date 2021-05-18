@@ -10,7 +10,7 @@ namespace CoolJobAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         IUserRepository _userRepository;
 

@@ -11,7 +11,7 @@ namespace CoolJobAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FavoritesController : Controller
+    public class FavoritesController : ControllerBase
     {
         private readonly IFavoriteRepository _favoriteRepository;
 
