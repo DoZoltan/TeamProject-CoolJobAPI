@@ -112,20 +112,27 @@ namespace CoolJobAPI.Controllers
             return BadRequest();
         }
 
-
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteJob(int jobId)
+        public ActionResult<Job> DeleteJob(int jobId)
         {
-            var job = _jobRepository.DeleteJobById(jobId);
+            var job = _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
                 return NotFound();
             }
+            else
+            {
+                var success = _jobRepository.DeleteJobById(jobId);
 
-            // Should it return with the deleted job?
-            return NoContent();
+                if (success)
+                {
+                    return CreatedAtAction(nameof(GetJob), new { id = jobId }, job);
+                }
+            }
+
+            return BadRequest();
         }
 
         /*
