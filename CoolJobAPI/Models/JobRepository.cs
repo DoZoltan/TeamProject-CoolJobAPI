@@ -98,7 +98,7 @@ namespace CoolJobAPI.Models
 
         public bool AddNewJob(Job job, int userId)
         {
-            var user = _context.Users.ToList().FirstOrDefault(user => user.Id == userId);
+            var user = _context.Users.FirstOrDefault(user => user.Id == userId);
             job.User = user;
 
             bool addWasSuccessfull = true;
@@ -116,15 +116,31 @@ namespace CoolJobAPI.Models
             return addWasSuccessfull;
         }
 
-        public Job DeleteJobById(int jobId)
+        public bool DeleteJobById(int jobId)
         {
-            var job = _context.Jobs.ToList().FirstOrDefault(job => job.Id == jobId);
+            // Is the job exists what I want to delete?
+            var job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+
+            bool deleteWasSuccessfull = true;
+
+            // Try to delete is if yes
             if (job != null)
             {
-                _context.Jobs.Remove(job);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Jobs.Remove(job);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    deleteWasSuccessfull = false;
+                }
+
+                return deleteWasSuccessfull;
+                
             }
-            return job;
+            
+            return false;
         }
 
         // How to handle if the object/model/entity value is Null? (if it null then the .GetType() method cause NullReferenceException)
