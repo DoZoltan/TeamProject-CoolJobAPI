@@ -102,11 +102,11 @@ namespace CoolJobAPI.Controllers
         [HttpPost]
         public ActionResult<Job> PostJob(Job job, int userId)
         {
-            var success = _jobRepository.AddNewJob(job, userId);
+            var addedJob = _jobRepository.AddNewJob(job, userId);
 
-            if (success)
+            if (addedJob != null)
             {
-                return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
+                return Ok(addedJob); //CreatedAtAction(nameof(GetJob), new { id = addedJob.Id }, addedJob);
             }
 
             return BadRequest();
