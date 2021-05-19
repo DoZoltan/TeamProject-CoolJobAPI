@@ -96,12 +96,10 @@ namespace CoolJobAPI.Models
             return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
-        public bool AddNewJob(Job job, int userId)
+        public Job AddNewJob(Job job, int userId)
         {
             var user = _context.Users.FirstOrDefault(user => user.Id == userId);
             job.User = user;
-
-            bool addWasSuccessfull = true;
             
             try
             {
@@ -110,10 +108,11 @@ namespace CoolJobAPI.Models
             }
             catch (DbUpdateException)
             {
-                addWasSuccessfull = false;
+                return null;
             }
 
-            return addWasSuccessfull;
+            var lastId = _context.Jobs.Max(job => job.Id);
+            return GetJobById(lastId);
         }
 
         public bool DeleteJobById(int jobId)
