@@ -8,10 +8,9 @@ using CoolJobAPI.Models;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         IUserRepository _userRepository;
 

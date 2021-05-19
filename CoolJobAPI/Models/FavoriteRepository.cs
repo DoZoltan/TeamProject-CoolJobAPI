@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace CoolJobAPI.Models
         // Get the favorites for the user
         public IEnumerable<Job> GetFavorites(int userId)
         {
-            return from fav in _context.Favorites
-                    where fav.User.Id == userId
-                    select fav.Job;
+            return _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job);
+        }
+        
+        public Job GetFavoriteJob(int jobId, int userId)
+        {
+            return GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
         }
 
         // Add a job to the user's favorite list
@@ -29,14 +33,26 @@ namespace CoolJobAPI.Models
             favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
             favorite.User = _context.Users.FirstOrDefault(user => user.Id == userId);
 
+            bool addWasSuccessfull = true;
+
             if (favorite.Job != null && favorite.User != null)
             {
-                _context.Favorites.Add(favorite);
-                _context.SaveChanges();
-                return true;
+                try
+                {
+                    _context.Favorites.Add(favorite);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    addWasSuccessfull = false;
+                }
+            }
+            else 
+            {
+                addWasSuccessfull = false;
             }
 
-            return false;
+            return addWasSuccessfull;
         }
 
         public Favorite DeleteFavoriteJob(int favId)

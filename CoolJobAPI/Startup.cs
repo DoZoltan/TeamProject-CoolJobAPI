@@ -33,9 +33,6 @@ namespace CoolJobAPI
                     });
             });
 
-
-            //services.AddDbContext<JobContext>(opt =>
-            //                                   opt.UseInMemoryDatabase("JobList"));
             services.AddDbContext<JobContext>(options
                 => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -62,8 +59,10 @@ namespace CoolJobAPI
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseCors("Access-Control-Allow-Origin");
+
             app.UseAuthorization();
-            app.UseCors();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

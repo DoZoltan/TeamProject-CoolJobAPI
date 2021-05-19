@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class FilterController : Controller
+    public class FilterController : ControllerBase
     {
         private readonly IJobRepository _jobRepository;
 
@@ -23,20 +22,30 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/filter/Type/Contract/1
         [Route("{filterBy}/{filterValue}/{page}")]
-        [HttpGet("{filterBy}/{filterValue}/{page}")]
         public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            return _jobRepository.GetFilteredJobs(filterBy, filterValue.ToLower(), page).ToList();
+            var filtered = _jobRepository.GetFilteredJobs(filterBy, filterValue, page);
+
+            if (filtered == null || !filtered.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(filtered);
         }
 
         // GET: api/filter/Type
         [Route("{filterBy}")]
-        [HttpGet("{filterBy}")]
         public ActionResult<IEnumerable<string>> GetFilterValuesByFilterType(string filterBy)
         {
-            var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy).ToHashSet();
-            result.Remove("");
-            return result;
+            var result = _jobRepository.GetSpecificFilterValuesByFilterType(filterBy);
+
+            if (result == null || !result.Any())
+            {
+                return NoContent();
+            }
+            
+            return Ok(result);
         }
     }
 }

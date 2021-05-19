@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
     public class JobsController : ControllerBase
@@ -21,14 +20,15 @@ namespace CoolJobAPI.Controllers
         {
             _jobRepository = jobRepository;
         }
+
         //GET: api/jobs/load
        [HttpGet("load/{AdminKey}")]
         public IActionResult GetLoad(string AdminKey)
         {
-            if(AdminKey == _jobRepository.GetAdminKey()) 
+            if (AdminKey == _jobRepository.GetAdminKey()) 
             {
                 _jobRepository.ClearDB();
-                if (_jobRepository.GetJobs().Count() < 1) // ef just in repository Count , ToList
+                if (_jobRepository.GetNumberOfTheJobs() < 1)
                 {                    
                     _jobRepository.LoadJson();
                 }
@@ -36,10 +36,17 @@ namespace CoolJobAPI.Controllers
             return NoContent();
         }
         //GET: api/Jobs
-       [HttpGet]
+        [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()
         {
-            return _jobRepository.GetJobs().ToList(); // ef just in repository Count , ToList
+            var jobs = _jobRepository.GetJobs();
+
+            if (jobs == null || !jobs.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(jobs);
         }
 
 
@@ -54,7 +61,7 @@ namespace CoolJobAPI.Controllers
                 return NotFound();
             }
 
-            return job;
+            return Ok(job);
         }
 
         /*
@@ -95,24 +102,37 @@ namespace CoolJobAPI.Controllers
         [HttpPost]
         public ActionResult<Job> PostJob(Job job, int userId)
         {
-            // we need the user id who posted the new advertisement
-            _jobRepository.AddNewJob(job,userId);
-            return CreatedAtAction(nameof(GetJob), new { id = job.Id }, job);
-        }
+            var addedJob = _jobRepository.AddNewJob(job, userId);
 
+            if (addedJob != null)
+            {
+                return Ok(addedJob); //CreatedAtAction(nameof(GetJob), new { id = addedJob.Id }, addedJob);
+            }
+
+            return BadRequest();
+        }
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteJob(int jobId)
+        public ActionResult<Job> DeleteJob(int jobId)
         {
-            var job = _jobRepository.DeleteJobById(jobId);
+            var job = _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
                 return NotFound();
             }
+            else
+            {
+                var success = _jobRepository.DeleteJobById(jobId);
 
-            return NoContent();
+                if (success)
+                {
+                    return CreatedAtAction(nameof(GetJob), new { id = jobId }, job);
+                }
+            }
+
+            return BadRequest();
         }
 
         /*

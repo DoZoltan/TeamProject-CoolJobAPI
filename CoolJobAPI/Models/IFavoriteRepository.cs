@@ -8,6 +8,7 @@ namespace CoolJobAPI.Models
     public interface IFavoriteRepository
     {
         IEnumerable<Job> GetFavorites(int userId);
+        Job GetFavoriteJob(int jobId, int userId);
         bool AddToFavorites(int jobId, int userId);
         Favorite DeleteFavoriteJob(int favId);
         int GetFavId(int jobId, int userId);

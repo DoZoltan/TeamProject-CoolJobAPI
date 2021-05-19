@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
     public class JobsPageController : ControllerBase
@@ -28,7 +27,14 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{page}")]
         public ActionResult<IEnumerable<Job>> GetJobsByPage(int page)
         {
-            return _jobRepository.GetJobsByRange(page).ToList();
+            var jobs = _jobRepository.GetJobsByRange(page);
+
+            if (jobs == null || !jobs.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(jobs);
         }
     }
 }

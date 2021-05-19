@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Cors;
 
 namespace CoolJobAPI.Controllers
 {
-    [EnableCors("Access-Control-Allow-Origin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class FavoritesController : Controller
+    public class FavoritesController : ControllerBase
     {
         private readonly IFavoriteRepository _favoriteRepository;
 
@@ -25,23 +24,43 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId)
         {
-            return _favoriteRepository.GetFavorites(userId).ToList();
+            var favorites = _favoriteRepository.GetFavorites(userId);
+            
+            if (favorites == null || !favorites.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(favorites);
         }
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
         [HttpGet("{jobId}/{userId}")]
         public ActionResult<Job> GetFavoriteJob(int jobId, int userId)
         {
-            return _favoriteRepository.GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
+            var favoriteJob = _favoriteRepository.GetFavoriteJob(jobId, userId);
+
+            if (favoriteJob == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(favoriteJob);
         }
 
         // Add a new job to the user's favorites
         [HttpPost]
         public ActionResult<Job> PostFavoriteJob(Job job, int userId)
         {
-            // Handle if the add procedure was failed
             var wasSuccessful = _favoriteRepository.AddToFavorites(job.Id, userId);
-            return GetFavoriteJob(job.Id, userId);
+
+            if (wasSuccessful)
+            {
+                return CreatedAtAction(nameof(GetFavoriteJob), new { jobId = job.Id, userId = userId }, job);
+            }
+
+            return BadRequest();
+            
         }
 
         // Delete a specific job from the user's favorites

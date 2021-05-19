@@ -78,6 +78,11 @@ namespace CoolJobAPI.Models
             return _context.Jobs;
         }
 
+        public int GetNumberOfTheJobs()
+        {
+            return _context.Jobs.Count();
+        }
+
         public Job GetJobById(int jobId)
         {
             return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
@@ -91,31 +96,50 @@ namespace CoolJobAPI.Models
             return _context.Jobs.Take(correctPageNum * 10).ToList();
         }
 
-        public void AddNewJob(Job job, int userId)
+        public Job AddNewJob(Job job, int userId)
         {
-            var user = _context.Users.ToList().FirstOrDefault(user => user.Id == userId);
+            var user = _context.Users.FirstOrDefault(user => user.Id == userId);
             job.User = user;
-
-            _context.Add(job);
+            
             try
             {
+                _context.Add(job);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                // return 5**
+                return null;
             }
+
+            var lastId = _context.Jobs.Max(job => job.Id);
+            return GetJobById(lastId);
         }
 
-        public Job DeleteJobById(int jobId)
+        public bool DeleteJobById(int jobId)
         {
-            var job = _context.Jobs.ToList().FirstOrDefault(job => job.Id == jobId);
+            // Is the job exists what I want to delete?
+            var job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+
+            bool deleteWasSuccessfull = true;
+
+            // Try to delete is if yes
             if (job != null)
             {
-                _context.Jobs.Remove(job);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Jobs.Remove(job);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    deleteWasSuccessfull = false;
+                }
+
+                return deleteWasSuccessfull;
+                
             }
-            return job;
+            
+            return false;
         }
 
         // How to handle if the object/model/entity value is Null? (if it null then the .GetType() method cause NullReferenceException)
@@ -144,7 +168,7 @@ namespace CoolJobAPI.Models
             string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
 
             // Get the unique filter values for the given filter type
-            return _context.Jobs.ToList().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).ToHashSet();
+            return _context.Jobs.AsEnumerable().Select(job => job.GetType().GetProperty(correctType)?.GetValue(job).ToString()).Distinct();
         }
     }
 }
