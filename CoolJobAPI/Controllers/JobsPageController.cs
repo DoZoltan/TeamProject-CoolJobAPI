@@ -27,8 +27,14 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{page}")]
         public ActionResult<IEnumerable<Job>> GetJobsByPage(int page)
         {
-            return Ok(_jobRepository.GetJobsByRange(page).ToList());
-            // NotFound() if the list is empty?
+            var jobs = _jobRepository.GetJobsByRange(page);
+
+            if (jobs == null || !jobs.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(jobs);
         }
     }
 }
