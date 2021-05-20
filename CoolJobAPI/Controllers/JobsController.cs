@@ -115,9 +115,9 @@ namespace CoolJobAPI.Controllers
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public ActionResult<Job> DeleteJob(int jobId)
+        public async Task<ActionResult<Job>> DeleteJob(int jobId)
         {
-            var job = _jobRepository.GetJobById(jobId);
+            var job = await _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
@@ -125,7 +125,7 @@ namespace CoolJobAPI.Controllers
             }
             else
             {
-                var success = _jobRepository.DeleteJobById(jobId);
+                var success = await _jobRepository.DeleteJobById(jobId);
 
                 if (success)
                 {

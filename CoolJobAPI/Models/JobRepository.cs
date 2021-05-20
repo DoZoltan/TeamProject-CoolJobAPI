@@ -158,10 +158,10 @@ namespace CoolJobAPI.Models
             return await GetJobById(lastId);
         }
 
-        public bool DeleteJobById(int jobId)
+        public async Task<bool> DeleteJobById(int jobId)
         {
             // Is the job exists what I want to delete?
-            var job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+            var job = await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
 
             bool deleteWasSuccessfull = true;
 
@@ -171,7 +171,7 @@ namespace CoolJobAPI.Models
                 try
                 {
                     _context.Jobs.Remove(job);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {
