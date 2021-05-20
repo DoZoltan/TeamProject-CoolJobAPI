@@ -53,9 +53,9 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/Jobs/5
         [HttpGet("{jobId}")]
-        public ActionResult<Job> GetJob(int jobId)
+        public async Task<ActionResult<Job>> GetJob(int jobId)
         {
-            var job = _jobRepository.GetJobById(jobId);
+            var job = await _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
@@ -101,9 +101,9 @@ namespace CoolJobAPI.Controllers
         //POST: api/Jobs
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<Job> PostJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostJob(Job job, int userId)
         {
-            var addedJob = _jobRepository.AddNewJob(job, userId);
+            var addedJob = await _jobRepository.AddNewJob(job, userId);
 
             if (addedJob != null)
             {

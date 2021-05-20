@@ -101,7 +101,7 @@ namespace CoolJobAPI.Models
                 foreach (var job in jobs)
                 {
                     //job.User = user;
-                    AddNewJob(job, user.Id);
+                    await AddNewJob(job, user.Id);
 
                 }
 
@@ -126,9 +126,9 @@ namespace CoolJobAPI.Models
             return await _context.Jobs.CountAsync();
         }
 
-        public Job GetJobById(int jobId)
+        public async Task<Job> GetJobById(int jobId)
         {
-            return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+            return await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
         }
 
         // Get the jobs in a specific range
@@ -139,23 +139,23 @@ namespace CoolJobAPI.Models
             return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();    //AsAsyncEnumerable();
         }
 
-        public Job AddNewJob(Job job, int userId)
+        public async Task<Job> AddNewJob(Job job, int userId)
         {
-            var user = _context.Users.FirstOrDefault(user => user.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
             job.User = user;
             
             try
             {
-                _context.Add(job);
-                _context.SaveChanges();
+                await _context.AddAsync(job);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
                 return null;
             }
 
-            var lastId = _context.Jobs.Max(job => job.Id);
-            return GetJobById(lastId);
+            var lastId = await _context.Jobs.MaxAsync(job => job.Id);
+            return await GetJobById(lastId);
         }
 
         public bool DeleteJobById(int jobId)

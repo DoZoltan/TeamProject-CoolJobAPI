@@ -12,9 +12,9 @@ namespace CoolJobAPI.Models
         Task<string> GetAdminKey();
         Task<IEnumerable<Job>> GetJobs();
         Task<int> GetNumberOfTheJobs();
-        Job GetJobById(int jobId);
+        Task<Job> GetJobById(int jobId);
         Task<IEnumerable<Job>> GetJobsByRange(int pageNum);
-        Job AddNewJob(Job job, int userId);
+        Task<Job> AddNewJob(Job job, int userId);
         bool DeleteJobById(int id);
         IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int num);
         IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy);
