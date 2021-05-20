@@ -25,9 +25,9 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/JobsPage/5
         [HttpGet("{page}")]
-        public ActionResult<IEnumerable<Job>> GetJobsByPage(int page)
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPage(int page)
         {
-            var jobs = _jobRepository.GetJobsByRange(page);
+            var jobs = await _jobRepository.GetJobsByRange(page);
 
             if (jobs == null || !jobs.Any())
             {
