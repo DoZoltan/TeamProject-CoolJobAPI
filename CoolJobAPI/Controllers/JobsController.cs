@@ -28,14 +28,14 @@ namespace CoolJobAPI.Controllers
         {
             if (AdminKey == await _jobRepository.GetAdminKey()) 
             {
-                _jobRepository.ClearDB();
-                if (_jobRepository.GetNumberOfTheJobs() < 1)
+                if (await _jobRepository.ClearDB() && _jobRepository.GetNumberOfTheJobs() < 1)
                 {                    
-                    _jobRepository.LoadJson();
+                   await _jobRepository.LoadJson();
                 }
             }
             return NoContent();
         }
+
         //GET: api/Jobs
         [HttpGet]
         public ActionResult<IEnumerable<Job>> GetJobs()

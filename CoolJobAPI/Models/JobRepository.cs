@@ -18,37 +18,69 @@ namespace CoolJobAPI.Models
             _context = context;
         }
 
-        public void ClearDB()
+        public async Task<bool> ClearDB()
         {
-            foreach (var entity in _context.Jobs)
-                _context.Jobs.Remove(entity);
-            foreach (var entity in _context.Users)
-                _context.Users.Remove(entity);
-            foreach (var entity in _context.Favorites)
-                _context.Favorites.Remove(entity);
-            _context.SaveChanges();     
+            bool clearWasSuccessful = true;
+
+            try
+            {
+                foreach (var entity in _context.Jobs)
+                    _context.Jobs.Remove(entity);
+                foreach (var entity in _context.Users)
+                    _context.Users.Remove(entity);
+                foreach (var entity in _context.Favorites)
+                    _context.Favorites.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                clearWasSuccessful = false;
+            }
+
+            return clearWasSuccessful;
         }
 
         public async Task<string> GetAdminKey()
         {
             Dictionary<string,string> adminKey;
-            using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
+
+            try
             {
-                string json = await r.ReadToEndAsync();
-                adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+                using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
+                {
+                    string json = await r.ReadToEndAsync();
+                    adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+
+                return adminKey["adminKey"];
             }
-            return adminKey["adminKey"];
+            catch (IOException)
+            {
+                return "Some IO error happened!";
+            }
         }
 
-        public void LoadJson()
+        public async Task<bool> LoadJson()
         {
-            //only for test
-            List<Job> jobs;
-            using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
+            bool loadWasSuccessful = true;
+
+            List<Job> jobs = new List<Job>();
+
+            try
             {
-                string json = r.ReadToEnd();
-                jobs = JsonConvert.DeserializeObject<List<Job>>(json);
+                //only for test
+                using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
+                {
+                    string json = await r.ReadToEndAsync();
+                    jobs = JsonConvert.DeserializeObject<List<Job>>(json);
+                }
             }
+            catch (IOException)
+            {
+                loadWasSuccessful = false;
+            }
+            
+            
             User user = new User
             {
                 UserName = "Admin",
@@ -62,15 +94,25 @@ namespace CoolJobAPI.Models
                 PasswordSalt = "sugar",
             }; // just for try to use user for jobs
 
-        _context.Add(user);
-
-            foreach (var job in jobs)
+            try
             {
-                //job.User = user;
-                AddNewJob(job, user.Id);
-                
+                await _context.AddAsync(user);
+
+                foreach (var job in jobs)
+                {
+                    //job.User = user;
+                    AddNewJob(job, user.Id);
+
+                }
+
+                await _context.SaveChangesAsync();
             }
-            _context.SaveChanges();
+            catch (DbUpdateException)
+            {
+                loadWasSuccessful = false;
+            }
+
+            return loadWasSuccessful;
 
         }
 

@@ -7,8 +7,8 @@ namespace CoolJobAPI.Models
 {
     public interface IJobRepository
     {
-        void ClearDB();
-        void LoadJson();
+        Task<bool> ClearDB();
+        Task<bool> LoadJson();
         Task<string> GetAdminKey();
         IEnumerable<Job> GetJobs();
         int GetNumberOfTheJobs();
