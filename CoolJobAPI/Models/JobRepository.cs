@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace CoolJobAPI.Models
 {
@@ -89,11 +90,11 @@ namespace CoolJobAPI.Models
         }
 
         // Get the jobs in a specific range
-        public IEnumerable<Job> GetJobsByRange(int pageNum)
+        public async Task<List<Job>> GetJobsByRange(int pageNum)
         {
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
-            return _context.Jobs.Take(correctPageNum * 10).ToList();
+            return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();
         }
 
         public Job AddNewJob(Job job, int userId)
