@@ -90,11 +90,11 @@ namespace CoolJobAPI.Models
         }
 
         // Get the jobs in a specific range
-        public async Task<List<Job>> GetJobsByRange(int pageNum)
+        public async Task<IEnumerable<Job>> GetJobsByRange(int pageNum)
         {
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
-            return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();
+            return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();    //AsAsyncEnumerable();
         }
 
         public Job AddNewJob(Job job, int userId)
