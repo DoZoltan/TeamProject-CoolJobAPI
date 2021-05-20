@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models
         Task<bool> LoadJson();
         Task<string> GetAdminKey();
         IEnumerable<Job> GetJobs();
-        int GetNumberOfTheJobs();
+        Task<int> GetNumberOfTheJobs();
         Job GetJobById(int jobId);
         Task<IEnumerable<Job>> GetJobsByRange(int pageNum);
         Job AddNewJob(Job job, int userId);

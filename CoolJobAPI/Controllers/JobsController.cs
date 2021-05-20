@@ -28,7 +28,7 @@ namespace CoolJobAPI.Controllers
         {
             if (AdminKey == await _jobRepository.GetAdminKey()) 
             {
-                if (await _jobRepository.ClearDB() && _jobRepository.GetNumberOfTheJobs() < 1)
+                if (await _jobRepository.ClearDB() && await _jobRepository.GetNumberOfTheJobs() < 1)
                 {                    
                    await _jobRepository.LoadJson();
                 }

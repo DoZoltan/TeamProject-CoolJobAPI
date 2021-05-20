@@ -121,9 +121,9 @@ namespace CoolJobAPI.Models
             return _context.Jobs;
         }
 
-        public int GetNumberOfTheJobs()
+        public async Task<int> GetNumberOfTheJobs()
         {
-            return _context.Jobs.Count();
+            return await _context.Jobs.CountAsync();
         }
 
         public Job GetJobById(int jobId)
