@@ -10,7 +10,7 @@ namespace CoolJobAPI.Models
         Task<bool> ClearDB();
         Task<bool> LoadJson();
         Task<string> GetAdminKey();
-        IEnumerable<Job> GetJobs();
+        Task<IEnumerable<Job>> GetJobs();
         Task<int> GetNumberOfTheJobs();
         Job GetJobById(int jobId);
         Task<IEnumerable<Job>> GetJobsByRange(int pageNum);

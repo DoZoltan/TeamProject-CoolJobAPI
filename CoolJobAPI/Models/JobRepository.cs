@@ -116,9 +116,9 @@ namespace CoolJobAPI.Models
 
         }
 
-        public IEnumerable<Job> GetJobs()
+        public async Task<IEnumerable<Job>> GetJobs()
         {
-            return _context.Jobs;
+            return await _context.Jobs.ToListAsync();
         }
 
         public async Task<int> GetNumberOfTheJobs()

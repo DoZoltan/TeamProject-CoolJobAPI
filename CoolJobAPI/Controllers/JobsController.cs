@@ -38,9 +38,9 @@ namespace CoolJobAPI.Controllers
 
         //GET: api/Jobs
         [HttpGet]
-        public ActionResult<IEnumerable<Job>> GetJobs()
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
         {
-            var jobs = _jobRepository.GetJobs();
+            var jobs = await _jobRepository.GetJobs();
 
             if (jobs == null || !jobs.Any())
             {
