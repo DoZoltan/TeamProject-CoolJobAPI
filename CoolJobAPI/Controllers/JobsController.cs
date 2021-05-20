@@ -7,6 +7,7 @@ using CoolJobAPI.Models;
 
 
 using Microsoft.AspNetCore.Cors;
+using System.Threading.Tasks;
 
 namespace CoolJobAPI.Controllers
 {
@@ -23,9 +24,9 @@ namespace CoolJobAPI.Controllers
 
         //GET: api/jobs/load
        [HttpGet("load/{AdminKey}")]
-        public IActionResult GetLoad(string AdminKey)
+        public async Task<IActionResult> GetLoad(string AdminKey)
         {
-            if (AdminKey == _jobRepository.GetAdminKey()) 
+            if (AdminKey == await _jobRepository.GetAdminKey()) 
             {
                 _jobRepository.ClearDB();
                 if (_jobRepository.GetNumberOfTheJobs() < 1)

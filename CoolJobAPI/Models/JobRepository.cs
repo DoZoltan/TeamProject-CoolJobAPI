@@ -29,12 +29,12 @@ namespace CoolJobAPI.Models
             _context.SaveChanges();     
         }
 
-        public string GetAdminKey()
+        public async Task<string> GetAdminKey()
         {
             Dictionary<string,string> adminKey;
             using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
             {
-                string json = r.ReadToEnd();
+                string json = await r.ReadToEndAsync();
                 adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
             }
             return adminKey["adminKey"];
