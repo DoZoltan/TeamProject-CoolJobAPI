@@ -23,7 +23,7 @@ namespace CoolJobAPI.Controllers
         }
 
         //GET: api/jobs/load
-       [HttpGet("load/{AdminKey}")]
+        [HttpGet("load/{AdminKey}")]
         public async Task<IActionResult> GetLoad(string AdminKey)
         {
             if (AdminKey == await _jobRepository.GetAdminKey()) 
