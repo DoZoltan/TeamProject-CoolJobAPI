@@ -16,14 +16,15 @@ namespace CoolJobAPI.Models
         }
 
         // Get the favorites for the user
-        public IEnumerable<Job> GetFavorites(int userId)
+        public async Task<IEnumerable<Job>> GetFavorites(int userId)
         {
-            return _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job);
+            return await _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job).ToListAsync();
         }
         
-        public Job GetFavoriteJob(int jobId, int userId)
+        public async Task<Job> GetFavoriteJob(int jobId, int userId)
         {
-            return GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
+            var favorites = await GetFavorites(userId);
+            return favorites.FirstOrDefault(job => job.Id == jobId);
         }
 
         // Add a job to the user's favorite list
