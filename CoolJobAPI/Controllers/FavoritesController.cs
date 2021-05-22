@@ -65,12 +65,12 @@ namespace CoolJobAPI.Controllers
 
         // Delete a specific job from the user's favorites
         [HttpDelete("{jobId}/{userId}")]
-        public IActionResult DeleteFavoriteJob(int jobId, int userId)
+        public async Task<IActionResult> DeleteFavoriteJob(int jobId, int userId)
         {
             // Get the favorite id by the job and user id
-            var favId = _favoriteRepository.GetFavId(jobId, userId);
+            var favId = await _favoriteRepository.GetFavId(jobId, userId);
 
-            if (_favoriteRepository.DeleteFavoriteJob(favId) == null)
+            if (await _favoriteRepository.DeleteFavoriteJob(favId) == null)
             {
                 return NotFound();
             }

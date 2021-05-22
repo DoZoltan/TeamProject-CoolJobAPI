@@ -56,21 +56,21 @@ namespace CoolJobAPI.Models
             return addWasSuccessfull;
         }
 
-        public Favorite DeleteFavoriteJob(int favId)
+        public async Task<Favorite> DeleteFavoriteJob(int favId)
         {
-            var fav = _context.Favorites.FirstOrDefault(fav => fav.Id == favId);
+            var fav = await _context.Favorites.FirstOrDefaultAsync(fav => fav.Id == favId);
 
             if (fav != null)
             {
                 _context.Favorites.Remove(fav);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return fav;
         }
 
-        public int GetFavId(int jobId, int userId)
+        public async Task<int> GetFavId(int jobId, int userId)
         {
-            var favorite = _context.Favorites.FirstOrDefault(fav => fav.Job.Id == jobId && fav.User.Id == userId);
+            var favorite = await _context.Favorites.FirstOrDefaultAsync(fav => fav.Job.Id == jobId && fav.User.Id == userId);
 
             if (favorite == null)
             {

@@ -10,7 +10,7 @@ namespace CoolJobAPI.Models
         Task<IEnumerable<Job>> GetFavorites(int userId);
         Task<Job> GetFavoriteJob(int jobId, int userId);
         Task<bool> AddToFavorites(int jobId, int userId);
-        Favorite DeleteFavoriteJob(int favId);
-        int GetFavId(int jobId, int userId);
+        Task<Favorite> DeleteFavoriteJob(int favId);
+        Task<int> GetFavId(int jobId, int userId);
     }
 }
