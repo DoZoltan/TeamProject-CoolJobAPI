@@ -22,9 +22,9 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/filter/Type/Contract/1
         [Route("{filterBy}/{filterValue}/{page}")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetFilteredJobs(string filterBy, string filterValue, int page)
+        public ActionResult<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int page)
         {
-            var filtered = await _jobRepository.GetFilteredJobs(filterBy, filterValue, page);
+            var filtered = _jobRepository.GetFilteredJobs(filterBy, filterValue, page);
 
             if (filtered == null || !filtered.Any())
             {

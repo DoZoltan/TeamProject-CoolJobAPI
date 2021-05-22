@@ -186,7 +186,7 @@ namespace CoolJobAPI.Models
         }
 
         // How to handle if the object/model/entity value is Null? (if it null then the .GetType() method cause NullReferenceException)
-        public async Task<IEnumerable<Job>> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
+        public IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int pageNum)
         {
             // Make the filterBy (property name) case insensitive (convert the 1st char to upper case and to lover case the others)
             string correctType = filterBy.Length > 1 ? filterBy[0].ToString().ToUpper() + filterBy[1..filterBy.Length].ToLower() : filterBy;
@@ -197,7 +197,7 @@ namespace CoolJobAPI.Models
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
             // Get the jobs what have the provided property (filter type)
-            var jobsWithSpecificProperties = await _context.Jobs.Where(job => job.GetType().GetProperty(correctType) != null).ToListAsync();
+            var jobsWithSpecificProperties = _context.Jobs.AsEnumerable().Where(job => job.GetType().GetProperty(correctType) != null);
 
             // Get the jobs what have the specific property with the specific value
             var filtered = jobsWithSpecificProperties.Where(job => job.GetType().GetProperty(correctType).GetValue(job).ToString().ToLower().Contains(correctValue));
