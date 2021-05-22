@@ -50,9 +50,9 @@ namespace CoolJobAPI.Controllers
 
         // Add a new job to the user's favorites
         [HttpPost]
-        public ActionResult<Job> PostFavoriteJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostFavoriteJob(Job job, int userId)
         {
-            var wasSuccessful = _favoriteRepository.AddToFavorites(job.Id, userId);
+            var wasSuccessful = await _favoriteRepository.AddToFavorites(job.Id, userId);
 
             if (wasSuccessful)
             {

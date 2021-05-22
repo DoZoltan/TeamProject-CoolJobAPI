@@ -28,11 +28,11 @@ namespace CoolJobAPI.Models
         }
 
         // Add a job to the user's favorite list
-        public bool AddToFavorites(int jobId, int userId)
+        public async Task<bool> AddToFavorites(int jobId, int userId)
         {
             Favorite favorite = new Favorite();
-            favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
-            favorite.User = _context.Users.FirstOrDefault(user => user.Id == userId);
+            favorite.Job = await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
+            favorite.User = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
 
             bool addWasSuccessfull = true;
 
@@ -40,8 +40,8 @@ namespace CoolJobAPI.Models
             {
                 try
                 {
-                    _context.Favorites.Add(favorite);
-                    _context.SaveChanges();
+                    await _context.Favorites.AddAsync(favorite);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {
