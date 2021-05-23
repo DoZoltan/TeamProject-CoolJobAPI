@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace CoolJobAPI.Models
 {
@@ -17,37 +18,69 @@ namespace CoolJobAPI.Models
             _context = context;
         }
 
-        public void ClearDB()
+        public async Task<bool> ClearDB()
         {
-            foreach (var entity in _context.Jobs)
-                _context.Jobs.Remove(entity);
-            foreach (var entity in _context.Users)
-                _context.Users.Remove(entity);
-            foreach (var entity in _context.Favorites)
-                _context.Favorites.Remove(entity);
-            _context.SaveChanges();     
+            bool clearWasSuccessful = true;
+
+            try
+            {
+                foreach (var entity in _context.Jobs)
+                    _context.Jobs.Remove(entity);
+                foreach (var entity in _context.Users)
+                    _context.Users.Remove(entity);
+                foreach (var entity in _context.Favorites)
+                    _context.Favorites.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                clearWasSuccessful = false;
+            }
+
+            return clearWasSuccessful;
         }
 
-        public string GetAdminKey()
+        public async Task<string> GetAdminKey()
         {
             Dictionary<string,string> adminKey;
-            using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
+
+            try
             {
-                string json = r.ReadToEnd();
-                adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+                using (StreamReader r = new StreamReader("wwwroot/data/admin.json"))
+                {
+                    string json = await r.ReadToEndAsync();
+                    adminKey = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+
+                return adminKey["adminKey"];
             }
-            return adminKey["adminKey"];
+            catch (IOException)
+            {
+                return "Some IO error happened!";
+            }
         }
 
-        public void LoadJson()
+        public async Task<bool> LoadJson()
         {
-            //only for test
-            List<Job> jobs;
-            using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
+            bool loadWasSuccessful = true;
+
+            List<Job> jobs = new List<Job>();
+
+            try
             {
-                string json = r.ReadToEnd();
-                jobs = JsonConvert.DeserializeObject<List<Job>>(json);
+                //only for test
+                using (StreamReader r = new StreamReader("wwwroot/data/data.json"))
+                {
+                    string json = await r.ReadToEndAsync();
+                    jobs = JsonConvert.DeserializeObject<List<Job>>(json);
+                }
             }
+            catch (IOException)
+            {
+                loadWasSuccessful = false;
+            }
+            
+            
             User user = new User
             {
                 UserName = "Admin",
@@ -61,64 +94,74 @@ namespace CoolJobAPI.Models
                 PasswordSalt = "sugar",
             }; // just for try to use user for jobs
 
-        _context.Add(user);
-
-            foreach (var job in jobs)
+            try
             {
-                //job.User = user;
-                AddNewJob(job, user.Id);
-                
+                await _context.AddAsync(user);
+
+                foreach (var job in jobs)
+                {
+                    //job.User = user;
+                    await AddNewJob(job, user.Id);
+
+                }
+
+                await _context.SaveChangesAsync();
             }
-            _context.SaveChanges();
+            catch (DbUpdateException)
+            {
+                loadWasSuccessful = false;
+            }
+
+            return loadWasSuccessful;
 
         }
 
-        public IEnumerable<Job> GetJobs()
+        public async Task<IEnumerable<Job>> GetJobs()
         {
-            return _context.Jobs;
+            return await _context.Jobs.ToListAsync();
         }
 
-        public int GetNumberOfTheJobs()
+        public async Task<int> GetNumberOfTheJobs()
         {
-            return _context.Jobs.Count();
+            return await _context.Jobs.CountAsync();
         }
 
-        public Job GetJobById(int jobId)
+        public async Task<Job> GetJobById(int jobId)
         {
-            return _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+            return await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
         }
 
         // Get the jobs in a specific range
-        public IEnumerable<Job> GetJobsByRange(int pageNum)
+        public async Task<IEnumerable<Job>> GetJobsByRange(int pageNum)
         {
             int correctPageNum = pageNum < 1 ? 1 : pageNum;
 
-            return _context.Jobs.Take(correctPageNum * 10).ToList();
+            return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();    //AsAsyncEnumerable();
         }
 
-        public Job AddNewJob(Job job, int userId)
+        public async Task<Job> AddNewJob(Job job, int userId)
         {
-            var user = _context.Users.FirstOrDefault(user => user.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
             job.User = user;
             
             try
             {
-                _context.Add(job);
-                _context.SaveChanges();
+                await _context.AddAsync(job);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
                 return null;
             }
 
-            var lastId = _context.Jobs.Max(job => job.Id);
-            return GetJobById(lastId);
+            var lastId = await _context.Jobs.MaxAsync(job => job.Id);
+            return await GetJobById(lastId);
         }
 
-        public bool DeleteJobById(int jobId)
+        public async Task<bool> DeleteJobById(int jobId)
         {
             // Is the job exists what I want to delete?
-            var job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
+            var job = await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
 
             bool deleteWasSuccessfull = true;
 
@@ -128,7 +171,7 @@ namespace CoolJobAPI.Models
                 try
                 {
                     _context.Jobs.Remove(job);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {

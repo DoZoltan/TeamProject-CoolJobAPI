@@ -16,22 +16,23 @@ namespace CoolJobAPI.Models
         }
 
         // Get the favorites for the user
-        public IEnumerable<Job> GetFavorites(int userId)
+        public async Task<IEnumerable<Job>> GetFavorites(int userId)
         {
-            return _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job);
+            return await _context.Favorites.Where(fav => fav.User.Id == userId).Select(fav => fav.Job).ToListAsync();
         }
         
-        public Job GetFavoriteJob(int jobId, int userId)
+        public async Task<Job> GetFavoriteJob(int jobId, int userId)
         {
-            return GetFavorites(userId).FirstOrDefault(job => job.Id == jobId);
+            var favorites = await GetFavorites(userId);
+            return favorites.FirstOrDefault(job => job.Id == jobId);
         }
 
         // Add a job to the user's favorite list
-        public bool AddToFavorites(int jobId, int userId)
+        public async Task<bool> AddToFavorites(int jobId, int userId)
         {
             Favorite favorite = new Favorite();
-            favorite.Job = _context.Jobs.FirstOrDefault(job => job.Id == jobId);
-            favorite.User = _context.Users.FirstOrDefault(user => user.Id == userId);
+            favorite.Job = await _context.Jobs.FirstOrDefaultAsync(job => job.Id == jobId);
+            favorite.User = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
 
             bool addWasSuccessfull = true;
 
@@ -39,8 +40,8 @@ namespace CoolJobAPI.Models
             {
                 try
                 {
-                    _context.Favorites.Add(favorite);
-                    _context.SaveChanges();
+                    await _context.Favorites.AddAsync(favorite);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {
@@ -55,21 +56,21 @@ namespace CoolJobAPI.Models
             return addWasSuccessfull;
         }
 
-        public Favorite DeleteFavoriteJob(int favId)
+        public async Task<Favorite> DeleteFavoriteJob(int favId)
         {
-            var fav = _context.Favorites.FirstOrDefault(fav => fav.Id == favId);
+            var fav = await _context.Favorites.FirstOrDefaultAsync(fav => fav.Id == favId);
 
             if (fav != null)
             {
                 _context.Favorites.Remove(fav);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return fav;
         }
 
-        public int GetFavId(int jobId, int userId)
+        public async Task<int> GetFavId(int jobId, int userId)
         {
-            var favorite = _context.Favorites.FirstOrDefault(fav => fav.Job.Id == jobId && fav.User.Id == userId);
+            var favorite = await _context.Favorites.FirstOrDefaultAsync(fav => fav.Job.Id == jobId && fav.User.Id == userId);
 
             if (favorite == null)
             {

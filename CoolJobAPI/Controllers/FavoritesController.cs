@@ -22,9 +22,9 @@ namespace CoolJobAPI.Controllers
 
         // Get favorites by user ID (As a user I want to see all of my favorites)
         [HttpGet("{userId}")]
-        public ActionResult<IEnumerable<Job>> GetFavoriteJobs(int userId)
+        public async Task<ActionResult<IEnumerable<Job>>> GetFavoriteJobs(int userId)
         {
-            var favorites = _favoriteRepository.GetFavorites(userId);
+            var favorites = await _favoriteRepository.GetFavorites(userId);
             
             if (favorites == null || !favorites.Any())
             {
@@ -36,9 +36,9 @@ namespace CoolJobAPI.Controllers
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
         [HttpGet("{jobId}/{userId}")]
-        public ActionResult<Job> GetFavoriteJob(int jobId, int userId)
+        public async Task<ActionResult<Job>> GetFavoriteJob(int jobId, int userId)
         {
-            var favoriteJob = _favoriteRepository.GetFavoriteJob(jobId, userId);
+            var favoriteJob = await _favoriteRepository.GetFavoriteJob(jobId, userId);
 
             if (favoriteJob == null)
             {
@@ -50,9 +50,9 @@ namespace CoolJobAPI.Controllers
 
         // Add a new job to the user's favorites
         [HttpPost]
-        public ActionResult<Job> PostFavoriteJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostFavoriteJob(Job job, int userId)
         {
-            var wasSuccessful = _favoriteRepository.AddToFavorites(job.Id, userId);
+            var wasSuccessful = await _favoriteRepository.AddToFavorites(job.Id, userId);
 
             if (wasSuccessful)
             {
@@ -65,12 +65,12 @@ namespace CoolJobAPI.Controllers
 
         // Delete a specific job from the user's favorites
         [HttpDelete("{jobId}/{userId}")]
-        public IActionResult DeleteFavoriteJob(int jobId, int userId)
+        public async Task<IActionResult> DeleteFavoriteJob(int jobId, int userId)
         {
             // Get the favorite id by the job and user id
-            var favId = _favoriteRepository.GetFavId(jobId, userId);
+            var favId = await _favoriteRepository.GetFavId(jobId, userId);
 
-            if (_favoriteRepository.DeleteFavoriteJob(favId) == null)
+            if (await _favoriteRepository.DeleteFavoriteJob(favId) == null)
             {
                 return NotFound();
             }

@@ -7,6 +7,7 @@ using CoolJobAPI.Models;
 
 
 using Microsoft.AspNetCore.Cors;
+using System.Threading.Tasks;
 
 namespace CoolJobAPI.Controllers
 {
@@ -22,24 +23,24 @@ namespace CoolJobAPI.Controllers
         }
 
         //GET: api/jobs/load
-       [HttpGet("load/{AdminKey}")]
-        public IActionResult GetLoad(string AdminKey)
+        [HttpGet("load/{AdminKey}")]
+        public async Task<IActionResult> GetLoad(string AdminKey)
         {
-            if (AdminKey == _jobRepository.GetAdminKey()) 
+            if (AdminKey == await _jobRepository.GetAdminKey()) 
             {
-                _jobRepository.ClearDB();
-                if (_jobRepository.GetNumberOfTheJobs() < 1)
+                if (await _jobRepository.ClearDB() && await _jobRepository.GetNumberOfTheJobs() < 1)
                 {                    
-                    _jobRepository.LoadJson();
+                   await _jobRepository.LoadJson();
                 }
             }
             return NoContent();
         }
+
         //GET: api/Jobs
         [HttpGet]
-        public ActionResult<IEnumerable<Job>> GetJobs()
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
         {
-            var jobs = _jobRepository.GetJobs();
+            var jobs = await _jobRepository.GetJobs();
 
             if (jobs == null || !jobs.Any())
             {
@@ -52,9 +53,9 @@ namespace CoolJobAPI.Controllers
 
         // GET: api/Jobs/5
         [HttpGet("{jobId}")]
-        public ActionResult<Job> GetJob(int jobId)
+        public async Task<ActionResult<Job>> GetJob(int jobId)
         {
-            var job = _jobRepository.GetJobById(jobId);
+            var job = await _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
@@ -100,9 +101,9 @@ namespace CoolJobAPI.Controllers
         //POST: api/Jobs
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<Job> PostJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostJob(Job job, int userId)
         {
-            var addedJob = _jobRepository.AddNewJob(job, userId);
+            var addedJob = await _jobRepository.AddNewJob(job, userId);
 
             if (addedJob != null)
             {
@@ -114,9 +115,9 @@ namespace CoolJobAPI.Controllers
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public ActionResult<Job> DeleteJob(int jobId)
+        public async Task<ActionResult<Job>> DeleteJob(int jobId)
         {
-            var job = _jobRepository.GetJobById(jobId);
+            var job = await _jobRepository.GetJobById(jobId);
 
             if (job == null)
             {
@@ -124,7 +125,7 @@ namespace CoolJobAPI.Controllers
             }
             else
             {
-                var success = _jobRepository.DeleteJobById(jobId);
+                var success = await _jobRepository.DeleteJobById(jobId);
 
                 if (success)
                 {
