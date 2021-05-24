@@ -55,11 +55,13 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         }
 
         [Test] //GetJobs() should return all of the jobs what was added to the database previously
-        public void TestGetJobs()
+        public async void TestGetJobs()
         {
             int expectedCollectionSize = 12;
 
-            int result = jobRepository.GetJobs().Count();
+            var jobs = await jobRepository.GetJobs();
+
+            int result = jobs.Count();
 
             Assert.AreEqual(expectedCollectionSize, result);
         }
@@ -83,36 +85,36 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         }
 
         [Test] //GetJobsByRange() should return jobs in a specific range (1 --> max 10, 2 --> max 20, 3 --> max 30)
-        public void TestGetJobsByRangeWithPageNumOne()
+        public async void TestGetJobsByRangeWithPageNumOne()
         {
             int expectedCollectionSize = 10;
             int pageNum = 1;
 
-            int result = jobRepository.GetJobsByRange(pageNum).Count();
+            var result = await jobRepository.GetJobsByRange(pageNum);
 
-            Assert.AreEqual(expectedCollectionSize, result);
+            Assert.AreEqual(expectedCollectionSize, result.Count());
         }
 
         [Test] //GetJobsByRange() should return jobs in a specific range (1 --> max 10, 2 --> max 20, 3 --> max 30)
-        public void TestGetJobsByRangeWithPageNumTwo()
+        public async void TestGetJobsByRangeWithPageNumTwo()
         {
             int expectedCollectionSize = 12;
             int pageNum = 2;
 
-            int result = jobRepository.GetJobsByRange(pageNum).Count();
+            var result = await jobRepository.GetJobsByRange(pageNum);
 
-            Assert.AreEqual(expectedCollectionSize, result);
+            Assert.AreEqual(expectedCollectionSize, result.Count());
         }
 
         [Test] //GetJobsByRange() should return jobs collection what have max ten element
-        public void TestGetJobsByRangeWithLessThanOnePageNumber()
+        public async void TestGetJobsByRangeWithLessThanOnePageNumber()
         {
             int expectedCollectionSize = 10;
             int pageNum = -2;
 
-            int result = jobRepository.GetJobsByRange(pageNum).Count();
+            var result = await jobRepository.GetJobsByRange(pageNum);
 
-            Assert.AreEqual(expectedCollectionSize, result);
+            Assert.AreEqual(expectedCollectionSize, result.Count());
         }
 
         [Test] //DeleteJobById() should return the job what was deleted
