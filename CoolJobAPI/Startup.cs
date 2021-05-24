@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace CoolJobAPI
 {
@@ -45,6 +46,8 @@ namespace CoolJobAPI
                 if (impl != null) services.AddScoped(intfc, impl);
             }
 
+            services.AddIdentityCore<User>().AddEntityFrameworkStores<JobContext>();
+
             services.AddControllers();
         }
 
@@ -61,6 +64,7 @@ namespace CoolJobAPI
 
             app.UseCors("Access-Control-Allow-Origin");
 
+            app.UseAuthentication();
             app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>
