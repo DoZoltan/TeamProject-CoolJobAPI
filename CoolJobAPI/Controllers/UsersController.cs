@@ -21,19 +21,17 @@ namespace CoolJobAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        //IUserRepository _userRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
 
         public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor) 
         {
-            //_userRepository = userRepository;
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
         }
 
         [HttpPost("Registration")]
-        public async Task<ActionResult<bool>> Registration([FromBody] UserRegistrationRequestDto user)
+        public async Task<ActionResult<RegistrationResponse>> Registration([FromBody] UserRegistrationRequestDto user)
         {
             if (ModelState.IsValid)
             {
