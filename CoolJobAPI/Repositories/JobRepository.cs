@@ -18,6 +18,7 @@ namespace CoolJobAPI.Models
             _context = context;
         }
 
+        /*
         public async Task<bool> ClearDB()
         {
             bool clearWasSuccessful = true;
@@ -90,8 +91,8 @@ namespace CoolJobAPI.Models
                 ProfilePicture = "picture",
                 BirthDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,
-                Password = "admin1234",
-                PasswordSalt = "sugar",
+                //Password = "admin1234",
+                //PasswordSalt = "sugar",
             }; // just for try to use user for jobs
 
             try
@@ -115,7 +116,7 @@ namespace CoolJobAPI.Models
             return loadWasSuccessful;
 
         }
-
+        */
         public async Task<IEnumerable<Job>> GetJobs()
         {
             return await _context.Jobs.ToListAsync();
