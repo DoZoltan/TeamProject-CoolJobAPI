@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using CoolJobAPI.Configuration;
 
 namespace CoolJobAPI
 {
@@ -47,6 +48,7 @@ namespace CoolJobAPI
             }
 
             services.AddIdentityCore<User>().AddEntityFrameworkStores<JobContext>();
+            services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
             services.AddControllers();
         }
