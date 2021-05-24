@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CoolJobAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] // with this we only have access to the favorites if we logged in
     [Route("api/[controller]")]
     [ApiController]
     public class FavoritesController : ControllerBase
@@ -60,7 +63,6 @@ namespace CoolJobAPI.Controllers
             }
 
             return BadRequest();
-            
         }
 
         // Delete a specific job from the user's favorites
