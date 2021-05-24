@@ -89,6 +89,61 @@ namespace CoolJobAPI.Controllers
             });
         }
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto user)
+        {
+            if (ModelState.IsValid)
+            {
+                // check if the user with the same email exist
+                var existingUser = await _userManager.FindByEmailAsync(user.Email);
+
+                if (existingUser == null)
+                {
+                    // We dont want to give to much information on why the request has failed for security reasons
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Result = false,
+                        Errors = new List<string>(){
+                                        "Invalid authentication request"
+                                    }
+                    });
+                }
+
+                // Now we need to check if the user has inputed the right password
+                var isCorrect = await _userManager.CheckPasswordAsync(existingUser, user.Password);
+
+                if (isCorrect)
+                {
+                    var jwtToken = GenerateJwtToken(existingUser);
+
+                    return Ok(new RegistrationResponse()
+                    {
+                        Result = true,
+                        Token = jwtToken
+                    });
+                }
+                else
+                {
+                    // We dont want to give to much information on why the request has failed for security reasons
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Result = false,
+                        Errors = new List<string>(){
+                                         "Invalid authentication request"
+                                    }
+                    });
+                }
+            }
+
+            return BadRequest(new RegistrationResponse()
+            {
+                Result = false,
+                Errors = new List<string>(){
+                                        "Invalid payload"
+                                    }
+            });
+        }
+
         private string GenerateJwtToken(IdentityUser user)
         {
             // define the jwt token which will be responsible of creating our tokens
