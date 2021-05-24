@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace CoolJobAPI.Models
     public class UserRepository : IUserRepository
     {
         private readonly JobContext _context;
+        private UserManager<User> userManager;
 
         public UserRepository(JobContext context)
         {
@@ -17,6 +19,7 @@ namespace CoolJobAPI.Models
 
         public bool DeleteUserByName(string userName)
         {
+            /*
             var user = IsUserExists(userName);
             if (user != null)
             {
@@ -24,12 +27,16 @@ namespace CoolJobAPI.Models
                 _context.SaveChanges();
                 return true;
             }
+            */
             return false;
+            
         }
 
-        public bool AddNewUser(string userName, string password)
+        public async Task<bool> RegisterNewUser(User newUser)
         {
+            var user = await userManager.FindByEmailAsync(newUser.Email);
 
+            /*
             try
             {
                 var user = IsUserExists(userName);
@@ -47,13 +54,9 @@ namespace CoolJobAPI.Models
             {
 
             }
+            */
 
             return true;
-        }
-
-        private User IsUserExists(string userName)
-        {
-            return _context.Users.ToList().FirstOrDefault(user => user.UserName == userName);
         }
     }
 }

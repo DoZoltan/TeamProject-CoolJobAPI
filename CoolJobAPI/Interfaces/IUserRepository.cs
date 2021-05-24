@@ -8,6 +8,6 @@ namespace CoolJobAPI.Models
     public interface IUserRepository
     {
         bool DeleteUserByName(string userName);
-        bool AddNewUser(string userName, string password);
+        Task<bool> RegisterNewUser(User newUser);
     }
 }
