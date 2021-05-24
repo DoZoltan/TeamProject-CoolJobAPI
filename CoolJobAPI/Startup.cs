@@ -63,8 +63,8 @@ namespace CoolJobAPI
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true, // this will validate the 3rd part of the jwt token using the secret that we added in the appsettings and verify we have generated the jwt token
-                    IssuerSigningKey = new SymmetricSecurityKey(key), // Add the secret key to our Jwt encryption
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     RequireExpirationTime = false,
