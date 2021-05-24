@@ -140,7 +140,7 @@ namespace CoolJobAPI.Models
             return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();    //AsAsyncEnumerable();
         }
 
-        public async Task<Job> AddNewJob(Job job, int userId)
+        public async Task<Job> AddNewJob(Job job, string userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
             job.User = user;

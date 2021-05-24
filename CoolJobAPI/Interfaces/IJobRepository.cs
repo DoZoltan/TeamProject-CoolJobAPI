@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models
         Task<int> GetNumberOfTheJobs();
         Task<Job> GetJobById(int jobId);
         Task<IEnumerable<Job>> GetJobsByRange(int pageNum);
-        Task<Job> AddNewJob(Job job, int userId);
+        Task<Job> AddNewJob(Job job, string userId);
         Task<bool> DeleteJobById(int id);
         IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int num);
         IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy);
