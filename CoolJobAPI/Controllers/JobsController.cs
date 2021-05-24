@@ -22,6 +22,7 @@ namespace CoolJobAPI.Controllers
             _jobRepository = jobRepository;
         }
 
+        /*
         //GET: api/jobs/load
         [HttpGet("load/{AdminKey}")]
         public async Task<IActionResult> GetLoad(string AdminKey)
@@ -35,6 +36,7 @@ namespace CoolJobAPI.Controllers
             }
             return NoContent();
         }
+        */
 
         //GET: api/Jobs
         [HttpGet]
