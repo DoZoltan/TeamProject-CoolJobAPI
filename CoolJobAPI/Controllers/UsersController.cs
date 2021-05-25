@@ -144,6 +144,37 @@ namespace CoolJobAPI.Controllers
             });
         }
 
+        [HttpPost]
+        [Route("RefreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                var res = await VerifyToken(tokenRequest);
+
+                if (res == null)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                    "Invalid tokens"
+                },
+                        Result = false
+                    });
+                }
+
+                return Ok(res);
+            }
+
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>() {
+                "Invalid payload"
+            },
+                Result = false
+            });
+        }
+
         private async Task<AutResult> GenerateJwtToken(IdentityUser user)
         {
             // define the jwt token which will be responsible of creating our tokens
