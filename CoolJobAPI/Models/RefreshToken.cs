@@ -19,6 +19,6 @@ namespace CoolJobAPI.Models
         public DateTime ExpiryDate { get; set; } // Refresh token is long lived it could last for months.
 
         [ForeignKey(nameof(UserId))]
-        public IdentityUser User { get; set; }
+        public User User { get; set; }
     }
 }
