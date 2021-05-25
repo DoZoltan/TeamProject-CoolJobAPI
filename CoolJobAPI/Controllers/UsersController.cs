@@ -14,6 +14,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using CoolJobAPI.Models.DTO.Requests;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CoolJobAPI.Controllers
 {
@@ -169,7 +171,7 @@ namespace CoolJobAPI.Controllers
             }),
                 // the life span of the token needs to be shorter and utilise refresh token to keep the user signedin
                 // but since this is a demo app we can extend it to fit our current need
-                Expires = DateTime.UtcNow.AddHours(6),
+                Expires = DateTime.UtcNow.AddMinutes(1),
                 // here we are adding the encryption alogorithim information which will be used to decrypt our token
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
