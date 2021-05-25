@@ -16,6 +16,7 @@ using System.Security.Claims;
 using CoolJobAPI.Models.DTO.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CoolJobAPI.Domain;
 
 namespace CoolJobAPI.Controllers
 {
@@ -26,13 +27,15 @@ namespace CoolJobAPI.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly JobContext _context;
 
-
-        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor, TokenValidationParameters tokenValidationParameters) 
+        // Make a repository and move the full token logic to there
+        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor, TokenValidationParameters tokenValidationParameters, JobContext context) 
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
             _tokenValidationParameters = tokenValidationParameters;
+            _context = context;
         }
 
         [HttpPost("Registration")]
@@ -67,13 +70,9 @@ namespace CoolJobAPI.Controllers
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
                 if (isCreated.Succeeded)
                 {
-                    var jwtToken = GenerateJwtToken(newUser);
+                    var jwtToken = await GenerateJwtToken(newUser);
 
-                    return Ok(new RegistrationResponse()
-                    {
-                        Result = true,
-                        Token = jwtToken
-                    });
+                    return Ok(jwtToken);
                 }
 
                 return new JsonResult(new RegistrationResponse()
@@ -119,13 +118,9 @@ namespace CoolJobAPI.Controllers
 
                 if (isCorrect)
                 {
-                    var jwtToken = GenerateJwtToken(existingUser);
+                    var jwtToken = await GenerateJwtToken(existingUser);
 
-                    return Ok(new RegistrationResponse()
-                    {
-                        Result = true,
-                        Token = jwtToken
-                    });
+                    return Ok(jwtToken);
                 }
                 else
                 {
@@ -149,7 +144,7 @@ namespace CoolJobAPI.Controllers
             });
         }
 
-        private string GenerateJwtToken(IdentityUser user)
+        private async Task<AutResult> GenerateJwtToken(IdentityUser user)
         {
             // define the jwt token which will be responsible of creating our tokens
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -183,7 +178,34 @@ namespace CoolJobAPI.Controllers
 
             var jwtToken = jwtTokenHandler.WriteToken(token);
 
-            return jwtToken;
+            var refreshToken = new RefreshToken()
+            {
+                JwtId = token.Id,
+                IsUsed = false,
+                UserId = user.Id,
+                AddedDate = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddYears(1),
+                IsRevoked = false,
+                Token = RandomString(25) + Guid.NewGuid()
+            };
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return new AutResult()
+            {
+                Token = jwtToken,
+                Result = true,
+                RefreshToken = refreshToken.Token
+            };
+        }
+
+        private string RandomString(int length)
+        {
+            var random = new Random();
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }
