@@ -25,11 +25,14 @@ namespace CoolJobAPI.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor) 
+
+        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor, TokenValidationParameters tokenValidationParameters) 
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [HttpPost("Registration")]
