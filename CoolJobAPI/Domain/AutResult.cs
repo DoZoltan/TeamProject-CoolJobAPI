@@ -9,7 +9,7 @@ namespace CoolJobAPI.Domain
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public bool Result { get; set; }
+        public bool Result { get; set; } // rename it to success
         public List<string> Errors { get; set; }
     }
 }
