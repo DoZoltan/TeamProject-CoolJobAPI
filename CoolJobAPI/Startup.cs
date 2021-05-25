@@ -64,6 +64,8 @@ namespace CoolJobAPI
                 RequireExpirationTime = false,
             };
 
+            services.AddSingleton(tokenValidationParameters);
+
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
