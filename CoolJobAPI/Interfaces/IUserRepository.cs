@@ -1,4 +1,5 @@
 ﻿using CoolJobAPI.Models;
+using CoolJobAPI.Models.DTO.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace CoolJobAPI.Interfaces
 {
-    interface IUserRepository
+    public interface IUserRepository
     {
         Task<User> GetByEmail(string email);
         Task<User> GetByUserName(string userName);
+        Task<User> CreateUser(UserRegistrationRequestDto user);
     }
 }
