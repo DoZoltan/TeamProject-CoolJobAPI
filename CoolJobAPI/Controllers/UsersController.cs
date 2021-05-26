@@ -17,6 +17,7 @@ using CoolJobAPI.Models.DTO.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CoolJobAPI.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoolJobAPI.Controllers
 {
@@ -150,7 +151,7 @@ namespace CoolJobAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var res = await VerifyToken(tokenRequest);
+                var res = await GenerateNewToken(tokenRequest);
 
                 if (res == null)
                 {
@@ -175,6 +176,121 @@ namespace CoolJobAPI.Controllers
             });
         }
 
+        private async Task<AutResult> GenerateNewToken(TokenRequestDto tokenRequest)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                //  it throws error if the token is expired... so this logic is not works
+                // var principal = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
+
+                // So I (Zoli) using ReadJwtToken method instead of ValidateToken
+                var validatedToken = jwtTokenHandler.ReadJwtToken(tokenRequest.Token);
+                var utcExpiryDate = long.Parse(validatedToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+
+                // Now we need to check if the token has a valid security algorithm
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                {
+                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (result == false)
+                    {
+                        return null;
+                    }
+                }
+
+                // Check if the token is not expired yet
+                var expDatee = UnixTimeStampToDateTime(utcExpiryDate);
+
+                if (expDatee > DateTime.UtcNow)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "We cannot refresh this since the token has not expired" },
+                        Result = false
+                    };
+                }
+
+                // Check the token we got if its saved in the db
+                var storedRefreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
+
+                if (storedRefreshToken == null)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "refresh token doesnt exist" },
+                        Result = false
+                    };
+                }
+
+                // Check the date of the saved token if it has expired
+                if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "token has expired, user needs to relogin" },
+                        Result = false
+                    };
+                }
+
+                // check if the refresh token has been used
+                if (storedRefreshToken.IsUsed)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "token has been used" },
+                        Result = false
+                    };
+                }
+
+                // Check if the token is revoked
+                if (storedRefreshToken.IsRevoked)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "token has been revoked" },
+                        Result = false
+                    };
+                }
+
+                // we are getting here the jwt token id
+                var jti = validatedToken.Claims.SingleOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+                // check the id that the recieved token has against the id saved in the db
+                if (storedRefreshToken.JwtId != jti)
+                {
+                    return new AutResult()
+                    {
+                        Errors = new List<string>() { "the token doenst matched the saved token" },
+                        Result = false
+                    };
+                }
+
+                storedRefreshToken.IsUsed = true;
+                _context.RefreshTokens.Update(storedRefreshToken);
+                await _context.SaveChangesAsync();
+
+                var dbUser = await _userManager.FindByIdAsync(storedRefreshToken.UserId);
+                return await GenerateJwtToken(dbUser);
+            }
+            catch (Exception ex)
+            {
+                return new AutResult()
+                {
+                    Errors = new List<string>() { ex.ToString() },
+                    Result = false
+                };
+            }
+        }
+
+        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
+            return dtDateTime;
+        }
+
         private async Task<AutResult> GenerateJwtToken(IdentityUser user)
         {
             // define the jwt token which will be responsible of creating our tokens
@@ -183,11 +299,6 @@ namespace CoolJobAPI.Controllers
             // our secret from the appsettings
             var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
 
-            // define our token descriptor
-            // utilise claims which are properties in our token which gives information about the token
-            // which belong to the specific user who it belongs to
-            // so it could contain their id, name, email the good part is that these information
-            // are generated by our server and identity framework which is valid and trusted
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -195,12 +306,10 @@ namespace CoolJobAPI.Controllers
                 new Claim("Id", user.Id),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                // the JTI is used for our refresh token which we will be convering in the next video
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             }),
-                // the life span of the token needs to be shorter and utilise refresh token to keep the user signedin
-                // but since this is a demo app we can extend it to fit our current need
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                // the life span of the token
+                Expires = DateTime.UtcNow.AddSeconds(15),
                 // here we are adding the encryption alogorithim information which will be used to decrypt our token
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
@@ -238,5 +347,7 @@ namespace CoolJobAPI.Controllers
             return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+
     }
 }
