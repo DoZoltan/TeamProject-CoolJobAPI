@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CoolJobAPI.Domain;
 using Microsoft.EntityFrameworkCore;
+using CoolJobAPI.Repositories;
 
 namespace CoolJobAPI.Controllers
 {
@@ -29,14 +30,17 @@ namespace CoolJobAPI.Controllers
         private readonly JwtConfig _jwtConfig;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly JobContext _context;
+        private readonly UserRepository _userRepository;
+
 
         // Make a repository and move the full token logic to there
-        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor, TokenValidationParameters tokenValidationParameters, JobContext context) 
+        public UsersController(UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionsMonitor, TokenValidationParameters tokenValidationParameters, JobContext context, UserRepository userRepository) 
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
+            _userRepository = userRepository;
         }
 
         [HttpPost("Registration")]
