@@ -11,6 +11,7 @@ using CoolJobAPI.Configuration;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace CoolJobAPI
 {
@@ -62,6 +63,7 @@ namespace CoolJobAPI
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 RequireExpirationTime = false,
+                ClockSkew = TimeSpan.Zero
             };
 
             services.AddSingleton(tokenValidationParameters);
