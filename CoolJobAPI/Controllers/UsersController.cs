@@ -44,23 +44,37 @@ namespace CoolJobAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = await _userManager.FindByEmailAsync(user.Email);
+                var userByEmail = await _userManager.FindByEmailAsync(user.Email);
+                var userByName = await _userManager.FindByNameAsync(user.UserName);
 
-                if (existingUser != null)
+                if (userByEmail != null || userByName != null)
                 {
                     return BadRequest(new RegistrationResponse()
                     {
                         Result = false,
-                        Errors = new List<string>(){
-                                            "Email already exist"
-                                        }
+                        Errors = new List<string>()
+                        {
+                            "Email or User name already exist"
+                        }
+                    });
+                }
+
+                if (user.Password != user.ConfirmPassword)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Result = false,
+                        Errors = new List<string>()
+                        {
+                            "The password and the confirmation password is not equal"
+                        }
                     });
                 }
 
                 var newUser = new User()
                 {
                     Email = user.Email,
-                    UserName = user.Name,
+                    UserName = user.UserName,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     ProfilePicture = user.ProfilePicture,
@@ -88,9 +102,10 @@ namespace CoolJobAPI.Controllers
             return BadRequest(new RegistrationResponse()
             {
                 Result = false,
-                Errors = new List<string>(){
-                                            "Invalid payload"
-                                        }
+                Errors = new List<string>()
+                {
+                    "Required registration fields is not filled"
+                }
             });
         }
 
@@ -309,7 +324,7 @@ namespace CoolJobAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             }),
                 // the life span of the token
-                Expires = DateTime.UtcNow.AddSeconds(15),
+                Expires = DateTime.UtcNow.AddSeconds(30),
                 // here we are adding the encryption alogorithim information which will be used to decrypt our token
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
