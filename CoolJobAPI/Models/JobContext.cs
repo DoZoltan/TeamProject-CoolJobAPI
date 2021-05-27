@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoolJobAPI.Models
 {
-    public class JobContext : IdentityDbContext
+    public class JobContext : IdentityDbContext<User>
     {
         public JobContext(DbContextOptions<JobContext> options)
             : base(options)
@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models
         }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
-        public new DbSet<User> Users { get; set; }
+        //public new DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
