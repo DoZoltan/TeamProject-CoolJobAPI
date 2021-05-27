@@ -79,7 +79,7 @@ namespace CoolJobAPI
             });
 
             //services.AddIdentityCore<User>().AddEntityFrameworkStores<JobContext>();
-            services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
                             .AddEntityFrameworkStores<JobContext>();
 
             services.AddControllers();
