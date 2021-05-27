@@ -7,7 +7,6 @@ namespace CoolJobAPI.Models
 {
     public class User : IdentityUser
     {
-        //public new int Id { get; set; }  // I think we have to use the IdentityUser's ID at controllers and repositories
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ProfilePicture { get; set; }
