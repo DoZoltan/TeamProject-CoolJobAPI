@@ -46,73 +46,75 @@ namespace CoolJobAPI.Controllers
         [HttpPost("Registration")]
         public async Task<ActionResult<RegistrationResponse>> Registration([FromBody] UserRegistrationRequestDto user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userByEmail = await _userManager.FindByEmailAsync(user.Email);
-                var userByName = await _userManager.FindByNameAsync(user.UserName);
-
-                if (userByEmail != null || userByName != null)
-                {
-                    return BadRequest(new RegistrationResponse()
-                    {
-                        Result = false,
-                        Errors = new List<string>()
-                        {
-                            "Email or User name already exist"
-                        }
-                    });
-                }
-
-                if (user.Password != user.ConfirmPassword)
-                {
-                    return BadRequest(new RegistrationResponse()
-                    {
-                        Result = false,
-                        Errors = new List<string>()
-                        {
-                            "The password and the confirmation password is not equal"
-                        }
-                    });
-                }
-
-                var newUser = new User()
-                {
-                    Email = user.Email,
-                    UserName = user.UserName,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    ProfilePicture = user.ProfilePicture,
-                    BirthDate = user.BirthDate,
-                    RegistrationDate = DateTime.Now
-                };
-
-                var isCreated = await _userManager.CreateAsync(newUser, user.Password);
-                if (isCreated.Succeeded)
-                {
-                    var jwtToken = await GenerateJwtToken(newUser);
-
-                    return Ok(jwtToken);
-                }
-
-                return new JsonResult(new RegistrationResponse()
+                return BadRequest(new RegistrationResponse()
                 {
                     Result = false,
-                    Errors = isCreated.Errors.Select(x => x.Description).ToList()
-                }
-                        )
-                { StatusCode = 500 };
+                    Errors = new List<string>()
+                    {
+                        "Required registration fields are not filled"
+                    }
+                });
+
+            }
+
+            if (user.Password != user.ConfirmPassword)
+            {
+                return BadRequest(new RegistrationResponse()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "The password and the confirmation password is not equal"
+                    }
+                });
+            }
+
+            if (await _userRepository.GetByEmail(user.Email) != null)
+            {
+                return Conflict(new RegistrationResponse()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Email is already exist"
+                    }
+                });
+            }
+
+            if (await _userRepository.GetByUserName(user.Email) != null)
+            {
+                return Conflict(new RegistrationResponse()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "User name is already exist"
+                    }
+                });
+            }
+
+            var newUser = await _userRepository.CreateUser(user);
+
+            if (newUser != null)
+            {
+                var jwtToken = await GenerateJwtToken(newUser);
+
+                return Ok(jwtToken);
             }
 
             return BadRequest(new RegistrationResponse()
             {
                 Result = false,
                 Errors = new List<string>()
-                {
-                    "Required registration fields is not filled"
-                }
+                    {
+                        "Create a new user is not possible"
+                    }
             });
         }
 
+        /*
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequestDto user)
         {
@@ -326,7 +328,7 @@ namespace CoolJobAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            }),
+                }),
                 // the life span of the token
                 Expires = DateTime.UtcNow.AddSeconds(30),
                 // here we are adding the encryption alogorithim information which will be used to decrypt our token
@@ -367,6 +369,6 @@ namespace CoolJobAPI.Controllers
             .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-
+        */
     }
 }
