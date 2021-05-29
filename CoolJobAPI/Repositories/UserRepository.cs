@@ -21,6 +21,11 @@ namespace CoolJobAPI.Repositories
             _userManager = userManager;
         }
 
+        public async Task<bool> CheckThePassword(User user, string password)
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+
         public async Task<User> CreateUser(UserRegistrationRequestDto user)
         {
             var newUser = new User()
