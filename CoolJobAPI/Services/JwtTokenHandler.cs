@@ -82,6 +82,34 @@ namespace CoolJobAPI.Services
             return jwtTokenHandler.WriteToken(token);
         }
 
+        public bool ValidateRefreshToken(string refreshToken)
+        {
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.RefreshSecret);
+
+            TokenValidationParameters parameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+                ClockSkew = TimeSpan.Zero
+            }; ;
+            
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                jwtSecurityTokenHandler.ValidateToken(refreshToken, parameters, out SecurityToken validatedToken);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         /*
 
 
