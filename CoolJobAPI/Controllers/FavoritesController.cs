@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CoolJobAPI.Interfaces;
+using System.Security.Claims;
 
 namespace CoolJobAPI.Controllers
 {
@@ -28,6 +29,12 @@ namespace CoolJobAPI.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<Job>>> GetFavoriteJobs(string userId)
         {
+            // We don't have to send the user ID where we use [Authorize] because we can get the user informations
+            // from the token what we have set in the token claims
+            string user_id = HttpContext.User.FindFirstValue("Id");
+            string email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            string name = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
+
             var favorites = await _favoriteRepository.GetFavorites(userId);
             
             if (favorites == null || !favorites.Any())
