@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using CoolJobAPI.Configuration;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -19,12 +18,12 @@ namespace CoolJobAPI
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -53,7 +52,11 @@ namespace CoolJobAPI
                 if (impl != null) services.AddScoped(intfc, impl);
             }
 
-            services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+            JwtConfig jwtConfig = new JwtConfig();
+            Configuration.Bind("JwtConfig", jwtConfig);
+            services.AddSingleton(jwtConfig); ;
+
+            services.AddSingleton<JwtTokenHandler>();
 
             var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
 
@@ -69,7 +72,6 @@ namespace CoolJobAPI
             };
 
             services.AddSingleton(tokenValidationParameters);
-            services.AddSingleton<JwtTokenHandler>();
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

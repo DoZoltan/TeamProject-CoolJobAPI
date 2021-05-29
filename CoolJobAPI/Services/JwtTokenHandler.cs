@@ -1,5 +1,4 @@
-﻿using CoolJobAPI.Configuration;
-using CoolJobAPI.Models;
+﻿using CoolJobAPI.Models;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
