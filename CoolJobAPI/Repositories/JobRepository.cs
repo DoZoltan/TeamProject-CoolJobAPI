@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using CoolJobAPI.Interfaces;
 
 namespace CoolJobAPI.Models
 {
