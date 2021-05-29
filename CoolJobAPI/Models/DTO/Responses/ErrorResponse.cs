@@ -11,7 +11,7 @@ namespace CoolJobAPI.Models.DTO.Responses
 
         public ErrorResponse(string massage)
         {
-            ErrorMessages = new List<String>() { massage };
+            ErrorMessages = new List<string>() { massage };
         }
 
         public ErrorResponse(IEnumerable<string> massages)
