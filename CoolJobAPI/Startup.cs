@@ -68,6 +68,7 @@ namespace CoolJobAPI
             };
 
             services.AddSingleton(tokenValidationParameters);
+            services.AddSingleton<TokenHandler>();
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
