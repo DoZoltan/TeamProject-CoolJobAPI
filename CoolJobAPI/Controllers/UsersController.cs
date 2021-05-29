@@ -16,7 +16,6 @@ using System.Security.Claims;
 using CoolJobAPI.Models.DTO.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using CoolJobAPI.Domain;
 using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Repositories;
 using CoolJobAPI.Interfaces;
@@ -37,55 +36,29 @@ namespace CoolJobAPI.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<ActionResult<RegistrationResponse>> Registration([FromBody] UserRegistrationRequestDto user)
+        public async Task<IActionResult> Registration([FromBody] UserRegistrationRequestDto user)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new RegistrationResponse()
-                {
-                    Result = false,
-                    Errors = new List<string>()
-                    {
-                        "Required registration fields are not filled"
-                    }
-                });
+                // Get the validation related error massages
+                IEnumerable<string> errorMassages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
+                return BadRequest(new ErrorResponse(errorMassages));
             }
 
             if (user.Password != user.ConfirmPassword)
             {
-                return BadRequest(new RegistrationResponse()
-                {
-                    Result = false,
-                    Errors = new List<string>()
-                    {
-                        "The password and the confirmation password is not equal"
-                    }
-                });
+                return BadRequest(new ErrorResponse("The password and the confirmation password is not equal"));
             }
 
             if (await _userRepository.GetByEmail(user.Email) != null)
             {
-                return Conflict(new RegistrationResponse()
-                {
-                    Result = false,
-                    Errors = new List<string>()
-                    {
-                        "Email is already exist"
-                    }
-                });
+                return Conflict(new ErrorResponse("Email is already exist"));
             }
 
             if (await _userRepository.GetByUserName(user.Email) != null)
             {
-                return Conflict(new RegistrationResponse()
-                {
-                    Result = false,
-                    Errors = new List<string>()
-                    {
-                        "User name is already exist"
-                    }
-                });
+                return Conflict(new ErrorResponse("User name is already exist"));
             }
 
             var newUser = await _userRepository.CreateUser(user);
@@ -97,20 +70,14 @@ namespace CoolJobAPI.Controllers
                 return Ok();
             }
 
-            return BadRequest(new RegistrationResponse()
-            {
-                Result = false,
-                Errors = new List<string>()
-                    {
-                        "Create a new user is not possible"
-                    }
-            });
+            return BadRequest(new ErrorResponse("Create a new user is not possible"));
         }
 
-        /*
+        
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequestDto user)
         {
+            /*
             if (ModelState.IsValid)
             {
                 // check if the user with the same email exist
@@ -157,8 +124,11 @@ namespace CoolJobAPI.Controllers
                                         "Invalid payload"
                                     }
             });
+            */
+            return Ok();
         }
 
+        /*
         [HttpPost]
         [Route("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequest)
