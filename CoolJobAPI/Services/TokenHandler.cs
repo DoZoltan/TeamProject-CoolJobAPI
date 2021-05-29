@@ -45,7 +45,7 @@ namespace CoolJobAPI.Services
 
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
 
-            var jwtToken = jwtTokenHandler.WriteToken(token);
+            return jwtTokenHandler.WriteToken(token);
 
             /*
             var refreshToken = new RefreshToken()
@@ -62,8 +62,6 @@ namespace CoolJobAPI.Services
             await _context.RefreshTokens.AddAsync(refreshToken);
             await _context.SaveChangesAsync();
             */
-
-            return jwtToken;
         }
 
 
