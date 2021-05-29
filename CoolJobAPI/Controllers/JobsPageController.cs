@@ -9,6 +9,7 @@ using CoolJobAPI.Models;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Cors;
+using CoolJobAPI.Interfaces;
 
 namespace CoolJobAPI.Controllers
 {
