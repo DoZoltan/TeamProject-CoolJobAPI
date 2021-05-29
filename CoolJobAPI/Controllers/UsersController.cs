@@ -68,8 +68,9 @@ namespace CoolJobAPI.Controllers
             if (newUser != null)
             {
                 var token = _jwtTokenHandler.GenerateToken(newUser);
+                var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
 
-                return Ok(new SuccessfulAuthResponse() { Token = token });
+                return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = refreshToken });
             }
 
             return BadRequest(new ErrorResponse("Create a new user is not possible"));
@@ -102,8 +103,9 @@ namespace CoolJobAPI.Controllers
             }
 
             var token = _jwtTokenHandler.GenerateToken(existingUser);
+            var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
 
-            return Ok(new SuccessfulAuthResponse() { Token = token });
+            return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = refreshToken });
         }
 
         /*
