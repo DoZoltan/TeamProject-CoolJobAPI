@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace CoolJobAPI.Services
 {
-    public class TokenHandler
+    public class JwtTokenHandler
     {
         private readonly JwtConfig _jwtConfig;
 
-        public TokenHandler(JwtConfig jwtConfig)
+        public JwtTokenHandler(JwtConfig jwtConfig)
         {
             _jwtConfig = jwtConfig;
         }
