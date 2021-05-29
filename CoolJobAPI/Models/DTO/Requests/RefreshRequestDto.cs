@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace CoolJobAPI.Models.DTO.Requests
 {
-    public class TokenRequestDto
+    public class RefreshRequestDto
     {
-        [Required]
-        public string Token { get; set; }
         [Required]
         public string RefreshToken { get; set; }
     }
