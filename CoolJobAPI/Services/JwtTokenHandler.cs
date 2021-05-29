@@ -63,62 +63,7 @@ namespace CoolJobAPI.Services
             */
         }
 
-
-
-
         /*
-
-
-        private async Task<AutResult> GenerateJwtToken(IdentityUser user)
-        {
-            // define the jwt token which will be responsible of creating our tokens
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            // our secret from the appsettings
-            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                new Claim("Id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                }),
-                // the life span of the token
-                Expires = DateTime.UtcNow.AddSeconds(30),
-                // here we are adding the encryption alogorithim information which will be used to decrypt our token
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-            };
-
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-
-            var jwtToken = jwtTokenHandler.WriteToken(token);
-
-            var refreshToken = new RefreshToken()
-            {
-                JwtId = token.Id,
-                IsUsed = false,
-                UserId = user.Id,
-                AddedDate = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddYears(1),
-                IsRevoked = false,
-                Token = RandomString(25) + Guid.NewGuid()
-            };
-
-            await _context.RefreshTokens.AddAsync(refreshToken);
-            await _context.SaveChangesAsync();
-
-            return new AutResult()
-            {
-                Token = jwtToken,
-                Result = true,
-                RefreshToken = refreshToken.Token
-            };
-        }
-
-
 
 
         private async Task<AutResult> GenerateNewToken(TokenRequestDto tokenRequest)
