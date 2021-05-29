@@ -63,6 +63,25 @@ namespace CoolJobAPI.Services
             */
         }
 
+        public string GenerateRefreshToken()
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+            // It have to be different than the Token secret
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.RefreshSecret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                // It have to be longer than the Token expire time
+                Expires = DateTime.UtcNow.AddMonths(6),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
+            };
+
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+
+            return jwtTokenHandler.WriteToken(token);
+        }
+
         /*
 
 
