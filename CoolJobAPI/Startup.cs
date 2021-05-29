@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using CoolJobAPI.Interfaces;
+using CoolJobAPI.Services;
 
 namespace CoolJobAPI
 {
@@ -68,7 +69,7 @@ namespace CoolJobAPI
             };
 
             services.AddSingleton(tokenValidationParameters);
-            services.AddSingleton<TokenHandler>();
+            services.AddSingleton<JwtTokenHandler>();
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
