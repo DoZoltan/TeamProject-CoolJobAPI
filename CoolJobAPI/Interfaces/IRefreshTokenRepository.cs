@@ -10,5 +10,6 @@ namespace CoolJobAPI.Interfaces
     {
         Task<bool> SaveToken(RefreshToken refreshtoken);
         Task<RefreshToken> GetByToken(string token);
+        Task<bool> RemoveTokenById(int Id);
     }
 }

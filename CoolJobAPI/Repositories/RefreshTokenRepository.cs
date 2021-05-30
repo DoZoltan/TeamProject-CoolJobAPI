@@ -23,6 +23,28 @@ namespace CoolJobAPI.Repositories
             return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
         }
 
+        public async Task<bool> RemoveTokenById(int Id)
+        {
+            var token = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Id == Id);
+
+            if (token == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                _context.RefreshTokens.Remove(token);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return false;
+            };
+
+            return true;
+        }
+
         public async Task<bool> SaveToken(RefreshToken refreshToken)
         {
             try
@@ -30,7 +52,7 @@ namespace CoolJobAPI.Repositories
                 await _context.RefreshTokens.AddAsync(refreshToken);
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException)
+            catch (Exception)
             {
                 return false;
             }
