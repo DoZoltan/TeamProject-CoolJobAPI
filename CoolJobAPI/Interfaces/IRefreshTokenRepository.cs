@@ -12,5 +12,6 @@ namespace CoolJobAPI.Interfaces
         Task<RefreshToken> GetByToken(string token);
         Task<bool> RemoveTokenById(int Id);
         Task<RefreshToken> GetPreviousToken(string userId);
+        Task<bool> RemoveAllTokenByUserId(string userId);
     }
 }
