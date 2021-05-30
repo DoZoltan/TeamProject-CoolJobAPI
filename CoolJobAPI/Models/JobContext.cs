@@ -9,6 +9,7 @@ namespace CoolJobAPI.Models
             : base(options)
         {
         }
+
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
