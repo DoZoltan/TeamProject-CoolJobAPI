@@ -28,13 +28,15 @@ namespace CoolJobAPI.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly JwtTokenHandler _jwtTokenHandler;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
 
         // Make a repository and move the full token logic to there
-        public UsersController(IUserRepository userRepository, JwtTokenHandler jwtTokenHandler) 
+        public UsersController(IUserRepository userRepository, JwtTokenHandler jwtTokenHandler, IRefreshTokenRepository refreshTokenRepository) 
         {
             _userRepository = userRepository;
             _jwtTokenHandler = jwtTokenHandler;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         [HttpPost("Registration")]
@@ -82,7 +84,6 @@ namespace CoolJobAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Get the validation related error massages
                 IEnumerable<string> errorMassages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
                 return BadRequest(new ErrorResponse(errorMassages));
@@ -102,62 +103,94 @@ namespace CoolJobAPI.Controllers
                 return Unauthorized();
             }
 
+            var oldRefreshToken = await _refreshTokenRepository.GetPreviousToken(existingUser.Id);
+
+            if (oldRefreshToken != null)
+            {
+                var successDelete = await _refreshTokenRepository.RemoveTokenById(oldRefreshToken.Id);
+
+                if (!successDelete)
+                {
+                    return BadRequest(new ErrorResponse("Deleting the old RefreshToken is not possible"));
+                }
+            }
+
             var token = _jwtTokenHandler.GenerateToken(existingUser);
             var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
 
-            return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = refreshToken });
-        }
-
-        /*
-        [HttpPost]
-        [Route("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequest)
-        {
-            if (ModelState.IsValid)
+            RefreshToken newRefreshToken = new RefreshToken()
             {
-                var res = await GenerateNewToken(tokenRequest);
+                Token = refreshToken,
+                UserId = existingUser.Id,
+                User = existingUser
+            };
 
-                if (res == null)
-                {
-                    return BadRequest(new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                    "Invalid tokens"
-                },
-                        Result = false
-                    });
-                }
+            var success = await _refreshTokenRepository.SaveToken(newRefreshToken);
 
-                return Ok(res);
+            if (!success)
+            {
+                return BadRequest(new ErrorResponse("Save a new RefreshToken is not possible"));
             }
 
-            return BadRequest(new RegistrationResponse()
-            {
-                Errors = new List<string>() {
-                "Invalid payload"
-            },
-                Result = false
-            });
+            return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = refreshToken });
         }
-
         
-
-        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        [HttpPost]
+        [Route("Refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto tokenRequest)
         {
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
-            return dtDateTime;
+            if (!ModelState.IsValid)
+            {
+                IEnumerable<string> errorMassages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+
+                return BadRequest(new ErrorResponse(errorMassages));
+            }
+
+            var isValid = _jwtTokenHandler.ValidateRefreshToken(tokenRequest.RefreshToken);
+
+            if (!isValid)
+            {
+                return BadRequest(new ErrorResponse("Token refreshing is not possible"));
+            }
+
+            var refreshToken = await _refreshTokenRepository.GetByToken(tokenRequest.RefreshToken);
+
+            if (refreshToken == null)
+            {
+                return NotFound("RefreshToken is not exists");
+            }
+
+            var successDelete = await _refreshTokenRepository.RemoveTokenById(refreshToken.Id);
+
+            if (!successDelete)
+            {
+                return BadRequest(new ErrorResponse("Deleting the old RefreshToken is not possible"));
+            }
+
+            var user = await _userRepository.GetById(refreshToken.UserId);
+
+            if (user == null)
+            {
+                return NotFound("User is not exists");
+            }
+
+            var token = _jwtTokenHandler.GenerateToken(user);
+
+            RefreshToken newRefreshToken = new RefreshToken()
+            {
+                Token = _jwtTokenHandler.GenerateRefreshToken(),
+                UserId = user.Id,
+                User = user
+            };
+
+            var successSave = await _refreshTokenRepository.SaveToken(newRefreshToken);
+
+            if (!successSave)
+            {
+                return BadRequest(new ErrorResponse("Save a new RefreshToken is not possible"));
+            }
+
+            return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = newRefreshToken.Token });
         }
-
-
-        private string RandomString(int length)
-        {
-            var random = new Random();
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        */
     }
 }
