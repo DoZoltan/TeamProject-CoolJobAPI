@@ -23,9 +23,9 @@ namespace CoolJobAPI.Repositories
             return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
         }
 
-        public async Task<RefreshToken> GetPreviousToken()
+        public async Task<RefreshToken> GetPreviousToken(string userId)
         {
-            return await _context.RefreshTokens.FirstOrDefaultAsync();
+            return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == userId);
         }
 
         public async Task<bool> RemoveTokenById(int Id)
