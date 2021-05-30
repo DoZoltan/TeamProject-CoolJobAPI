@@ -11,7 +11,6 @@ namespace CoolJobAPI.Models
         }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
-        //public new DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
