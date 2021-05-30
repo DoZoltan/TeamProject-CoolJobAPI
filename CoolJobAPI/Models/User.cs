@@ -14,5 +14,6 @@ namespace CoolJobAPI.Models
         public DateTime RegistrationDate { get; set; }
         public ICollection<Job> Jobs { get; set; }
         public ICollection<Favorite> Favorites { get; set; }
+        public RefreshToken RefreshTokens { get; set; }
     }
 }
