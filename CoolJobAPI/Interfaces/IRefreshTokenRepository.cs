@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace CoolJobAPI.Interfaces
 {
-    interface IRefreshTokenRepository
+    public interface IRefreshTokenRepository
     {
-        Task<string> Create(RefreshToken refreshtoken);
+        Task<bool> SaveToken(RefreshToken refreshtoken);
     }
 }
