@@ -37,7 +37,7 @@ namespace CoolJobAPI.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
                 // the life span of the token
-                Expires = DateTime.UtcNow.AddSeconds(30),
+                Expires = DateTime.UtcNow.AddMinutes(15),
                 // here we are adding the encryption alogorithim information which will be used to decrypt our token
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
@@ -45,22 +45,6 @@ namespace CoolJobAPI.Services
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
 
             return jwtTokenHandler.WriteToken(token);
-
-            /*
-            var refreshToken = new RefreshToken()
-            {
-                JwtId = token.Id,
-                IsUsed = false,
-                UserId = user.Id,
-                AddedDate = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddYears(1),
-                IsRevoked = false,
-                Token = RandomString(25) + Guid.NewGuid()
-            };
-
-            await _context.RefreshTokens.AddAsync(refreshToken);
-            await _context.SaveChangesAsync();
-            */
         }
 
         public string GenerateRefreshToken()
@@ -109,119 +93,5 @@ namespace CoolJobAPI.Services
                 return false;
             }
         }
-
-        /*
-
-
-        private async Task<AutResult> GenerateNewToken(TokenRequestDto tokenRequest)
-        {
-
-            
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                //  it throws error if the token is expired... so this logic is not works
-                // var principal = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
-
-                // So I (Zoli) using ReadJwtToken method instead of ValidateToken
-                var validatedToken = jwtTokenHandler.ReadJwtToken(tokenRequest.Token);
-                var utcExpiryDate = long.Parse(validatedToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-
-                // Now we need to check if the token has a valid security algorithm
-                if (validatedToken is JwtSecurityToken jwtSecurityToken)
-                {
-                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
-
-                    if (result == false)
-                    {
-                        return null;
-                    }
-                }
-
-                // Check if the token is not expired yet
-                var expDatee = UnixTimeStampToDateTime(utcExpiryDate);
-
-                if (expDatee > DateTime.UtcNow)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "We cannot refresh this since the token has not expired" },
-                        Result = false
-                    };
-                }
-
-                // Check the token we got if its saved in the db
-                var storedRefreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
-
-                if (storedRefreshToken == null)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "refresh token doesnt exist" },
-                        Result = false
-                    };
-                }
-
-                // Check the date of the saved token if it has expired
-                if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "token has expired, user needs to relogin" },
-                        Result = false
-                    };
-                }
-
-                // check if the refresh token has been used
-                if (storedRefreshToken.IsUsed)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "token has been used" },
-                        Result = false
-                    };
-                }
-
-                // Check if the token is revoked
-                if (storedRefreshToken.IsRevoked)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "token has been revoked" },
-                        Result = false
-                    };
-                }
-
-                // we are getting here the jwt token id
-                var jti = validatedToken.Claims.SingleOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-
-                // check the id that the recieved token has against the id saved in the db
-                if (storedRefreshToken.JwtId != jti)
-                {
-                    return new AutResult()
-                    {
-                        Errors = new List<string>() { "the token doenst matched the saved token" },
-                        Result = false
-                    };
-                }
-
-                storedRefreshToken.IsUsed = true;
-                _context.RefreshTokens.Update(storedRefreshToken);
-                await _context.SaveChangesAsync();
-
-                var dbUser = await _userManager.FindByIdAsync(storedRefreshToken.UserId);
-                return await GenerateJwtToken(dbUser);
-            }
-            catch (Exception ex)
-            {
-                return new AutResult()
-                {
-                    Errors = new List<string>() { ex.ToString() },
-                    Result = false
-                };
-            }
-        }
-            */
     }
 }
