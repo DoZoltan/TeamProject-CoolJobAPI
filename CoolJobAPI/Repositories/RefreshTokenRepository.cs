@@ -18,6 +18,11 @@ namespace CoolJobAPI.Repositories
             _context = context;
         }
 
+        public async Task<RefreshToken> GetByToken(string token)
+        {
+            return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
+        }
+
         public async Task<bool> SaveToken(RefreshToken refreshToken)
         {
             try
