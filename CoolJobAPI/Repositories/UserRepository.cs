@@ -51,14 +51,17 @@ namespace CoolJobAPI.Repositories
 
         public async Task<bool> DeleteUser(User user)
         {
+            // We should put the _userManager actions inside a try-catch block too, as we did with the _context actions
+            // Fix it later!
             var isDeleted = await _userManager.DeleteAsync(user);
-
+            
             if (isDeleted.Succeeded)
             {
                 return true;
             }
 
             return false;
+            
         }
 
         public async Task<User> GetByEmail(string email)
