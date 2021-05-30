@@ -49,6 +49,18 @@ namespace CoolJobAPI.Repositories
             return null;
         }
 
+        public async Task<bool> DeleteUser(User user)
+        {
+            var isDeleted = await _userManager.DeleteAsync(user);
+
+            if (isDeleted.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<User> GetByEmail(string email)
         {
             return await _userManager.FindByEmailAsync(email);

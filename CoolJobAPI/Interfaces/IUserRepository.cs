@@ -14,5 +14,6 @@ namespace CoolJobAPI.Interfaces
         Task<User> GetById(string Id);
         Task<User> CreateUser(UserRegistrationRequestDto user);
         Task<bool> CheckThePassword(User user, string password);
+        Task<bool> DeleteUser(User user);
     }
 }
