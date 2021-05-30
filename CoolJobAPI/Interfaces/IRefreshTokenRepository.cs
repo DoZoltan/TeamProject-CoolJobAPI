@@ -9,5 +9,6 @@ namespace CoolJobAPI.Interfaces
     public interface IRefreshTokenRepository
     {
         Task<bool> SaveToken(RefreshToken refreshtoken);
+        Task<RefreshToken> GetByToken(string token);
     }
 }
