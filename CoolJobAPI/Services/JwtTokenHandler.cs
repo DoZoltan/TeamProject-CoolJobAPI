@@ -95,7 +95,7 @@ namespace CoolJobAPI.Services
                 ValidateLifetime = true,
                 RequireExpirationTime = false,
                 ClockSkew = TimeSpan.Zero
-            }; ;
+            };
             
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
