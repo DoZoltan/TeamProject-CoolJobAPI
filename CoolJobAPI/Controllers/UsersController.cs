@@ -3,20 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
 using CoolJobAPI.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using CoolJobAPI.Models.DTO.Responses;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using CoolJobAPI.Models.DTO.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using CoolJobAPI.Repositories;
 using CoolJobAPI.Interfaces;
 using CoolJobAPI.Services;
 
@@ -122,7 +114,7 @@ namespace CoolJobAPI.Controllers
             {
                 Token = refreshToken,
                 UserId = existingUser.Id,
-                User = existingUser
+                User = existingUser,
             };
 
             var success = await _refreshTokenRepository.SaveToken(newRefreshToken);
@@ -160,18 +152,18 @@ namespace CoolJobAPI.Controllers
                 return NotFound("RefreshToken is not exists");
             }
 
-            var successDelete = await _refreshTokenRepository.RemoveTokenById(refreshToken.Id);
-
-            if (!successDelete)
-            {
-                return BadRequest(new ErrorResponse("Deleting the old RefreshToken is not possible"));
-            }
-
             var user = await _userRepository.GetById(refreshToken.UserId);
 
             if (user == null)
             {
                 return NotFound("User is not exists");
+            }
+
+            var successDelete = await _refreshTokenRepository.RemoveTokenById(refreshToken.Id);
+
+            if (!successDelete)
+            {
+                return BadRequest(new ErrorResponse("Deleting the old RefreshToken is not possible"));
             }
 
             var token = _jwtTokenHandler.GenerateToken(user);
@@ -198,7 +190,7 @@ namespace CoolJobAPI.Controllers
         public async Task<IActionResult> Logout()
         {
             // Get the user ID from the Token
-            string userId = HttpContext.User.FindFirstValue("Id");
+            var userId = HttpContext.User.FindFirstValue("Id");
 
             if (userId == null || userId.Length == 0)
             {
@@ -210,6 +202,47 @@ namespace CoolJobAPI.Controllers
             if (!successDelete)
             {
                 return BadRequest(new ErrorResponse("Failed logout - Can't delete the refresh token"));
+            }
+
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("DeleteRegistration")]
+        public async Task<IActionResult> DeleteRegistration([FromBody] UserLoginRequestDto userRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                IEnumerable<string> errorMassages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+
+                return BadRequest(new ErrorResponse(errorMassages));
+            }
+
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var userByEmail = await _userRepository.GetByEmail(userRequest.Email);
+
+            if (userId == null || userId.Length == 0 || userByEmail == null)
+            {
+                return BadRequest(new ErrorResponse("User is not exists"));
+            }
+
+            var user = await _userRepository.GetById(userId);
+
+            var isThePasswordValid = await _userRepository.CheckThePassword(user, userRequest.Password);
+
+            if (!isThePasswordValid)
+            {
+                return Unauthorized();
+            }
+
+            // If we want to delete a row from a parent table, and we also want to delete the related row from the child table
+            // then we have to set up this: onDelete: ReferentialAction.Cascade
+            // in the migration file at the child tables where the foreign key is set
+            var successDelete = await _userRepository.DeleteUser(user);
+
+            if (!successDelete)
+            {
+                return BadRequest(new ErrorResponse("Can't delete the user"));
             }
 
             return Ok();
