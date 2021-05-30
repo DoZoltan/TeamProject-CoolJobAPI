@@ -103,7 +103,9 @@ namespace CoolJobAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("RefreshTokens");
                 });
@@ -346,8 +348,8 @@ namespace CoolJobAPI.Migrations
             modelBuilder.Entity("CoolJobAPI.Models.RefreshToken", b =>
                 {
                     b.HasOne("CoolJobAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithOne("RefreshTokens")
+                        .HasForeignKey("CoolJobAPI.Models.RefreshToken", "UserId");
 
                     b.Navigation("User");
                 });
@@ -408,6 +410,8 @@ namespace CoolJobAPI.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Jobs");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }
