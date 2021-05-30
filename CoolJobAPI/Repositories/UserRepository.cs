@@ -54,6 +54,11 @@ namespace CoolJobAPI.Repositories
             return await _userManager.FindByEmailAsync(email);
         }
 
+        public async Task<User> GetById(string Id)
+        {
+            return await _userManager.FindByIdAsync(Id);
+        }
+
         public async Task<User> GetByUserName(string userName)
         {
             return await _userManager.FindByNameAsync(userName);
