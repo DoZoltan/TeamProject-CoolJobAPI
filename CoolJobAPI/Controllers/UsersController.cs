@@ -103,7 +103,7 @@ namespace CoolJobAPI.Controllers
                 return Unauthorized();
             }
 
-            var oldRefreshToken = await _refreshTokenRepository.GetPreviousToken(existingUser.Id);
+            var oldRefreshToken = await _refreshTokenRepository.GetTokenByUserId(existingUser.Id);
 
             if (oldRefreshToken != null)
             {
@@ -191,6 +191,28 @@ namespace CoolJobAPI.Controllers
             }
 
             return Ok(new SuccessfulAuthResponse() { Token = token, RefreshToken = newRefreshToken.Token });
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            // Get the user ID from the Token
+            string userId = HttpContext.User.FindFirstValue("Id");
+
+            if (userId == null || userId.Length == 0)
+            {
+                return Unauthorized();
+            }
+
+            var successDelete = await _refreshTokenRepository.RemoveTokenByUserId(userId);
+
+            if (!successDelete)
+            {
+                return BadRequest(new ErrorResponse("Failed logout - Can't delete the refresh token"));
+            }
+
+            return Ok();
         }
     }
 }
