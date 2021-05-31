@@ -16,5 +16,8 @@ namespace CoolJobAPI.Interfaces
         Task<bool> DeleteJobById(int id);
         IEnumerable<Job> GetFilteredJobs(string filterBy, string filterValue, int num);
         IEnumerable<string> GetSpecificFilterValuesByFilterType(string filterBy);
+        Task<bool> LoadJson(string userId);
+        Task<string> GetAdminKey();
+        Task<bool> ClearDB();
     }
 }

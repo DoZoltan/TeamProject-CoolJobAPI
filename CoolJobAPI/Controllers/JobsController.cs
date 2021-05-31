@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CoolJobAPI.Interfaces;
+using System.Security.Claims;
 
 namespace CoolJobAPI.Controllers
 {
@@ -25,21 +26,30 @@ namespace CoolJobAPI.Controllers
             _jobRepository = jobRepository;
         }
 
-        /*
+
         //GET: api/jobs/load
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("load/{AdminKey}")]
         public async Task<IActionResult> GetLoad(string AdminKey)
         {
-            if (AdminKey == await _jobRepository.GetAdminKey()) 
+            string name = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
+            if (name == "Admin")
             {
-                if (await _jobRepository.ClearDB() && await _jobRepository.GetNumberOfTheJobs() < 1)
-                {                    
-                   await _jobRepository.LoadJson();
+                if (AdminKey == await _jobRepository.GetAdminKey())
+                {
+                    if (await _jobRepository.ClearDB() && await _jobRepository.GetNumberOfTheJobs() < 1)
+                    {
+                        string userId = HttpContext.User.FindFirstValue("Id");
+                        bool success = await _jobRepository.LoadJson(userId);
+                        if (success) return Ok("Database reloaded");
+                    }
+                    return BadRequest("Database error");
                 }
+                return BadRequest("Not valid admin key");
             }
-            return NoContent();
+            return BadRequest("Not valid user");
         }
-        */
+
 
         //GET: api/Jobs
         [HttpGet]
