@@ -19,17 +19,20 @@ namespace CoolJobAPI.Models
             _context = context;
         }
 
-        /*
+
         public async Task<bool> ClearDB()
         {
             bool clearWasSuccessful = true;
 
             try
             {
+                foreach (var token in _context.RefreshTokens)
+                    _context.RefreshTokens.Remove(token);
                 foreach (var entity in _context.Jobs)
                     _context.Jobs.Remove(entity);
                 foreach (var entity in _context.Users)
-                    _context.Users.Remove(entity);
+                    if(entity.UserName != "Admin")
+                        _context.Users.Remove(entity);
                 foreach (var entity in _context.Favorites)
                     _context.Favorites.Remove(entity);
                 await _context.SaveChangesAsync();
@@ -44,7 +47,7 @@ namespace CoolJobAPI.Models
 
         public async Task<string> GetAdminKey()
         {
-            Dictionary<string,string> adminKey;
+            Dictionary<string, string> adminKey;
 
             try
             {
@@ -62,7 +65,7 @@ namespace CoolJobAPI.Models
             }
         }
 
-        public async Task<bool> LoadJson()
+        public async Task<bool> LoadJson(string userId)
         {
             bool loadWasSuccessful = true;
 
@@ -81,29 +84,14 @@ namespace CoolJobAPI.Models
             {
                 loadWasSuccessful = false;
             }
-            
-            
-            User user = new User
-            {
-                UserName = "Admin",
-                FirstName = "Admin",
-                LastName = "Admin",
-                Email = "kumkvatmailcool@gmail.com",
-                ProfilePicture = "picture",
-                BirthDate = DateTime.Now,
-                RegistrationDate = DateTime.Now,
-                //Password = "admin1234",
-                //PasswordSalt = "sugar",
-            }; // just for try to use user for jobs
 
             try
             {
-                await _context.AddAsync(user);
 
                 foreach (var job in jobs)
                 {
                     //job.User = user;
-                    await AddNewJob(job, user.Id);
+                    await AddNewJob(job, userId);
 
                 }
 
@@ -117,7 +105,7 @@ namespace CoolJobAPI.Models
             return loadWasSuccessful;
 
         }
-        */
+
         public async Task<IEnumerable<Job>> GetJobs()
         {
             return await _context.Jobs.ToListAsync();
