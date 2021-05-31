@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
 using Microsoft.AspNetCore.Cors;
+using CoolJobAPI.Interfaces;
 
 namespace CoolJobAPI.Controllers
 {

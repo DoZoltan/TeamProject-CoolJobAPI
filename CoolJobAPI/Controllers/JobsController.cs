@@ -8,6 +8,9 @@ using CoolJobAPI.Models;
 
 using Microsoft.AspNetCore.Cors;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CoolJobAPI.Interfaces;
 
 namespace CoolJobAPI.Controllers
 {
@@ -22,6 +25,7 @@ namespace CoolJobAPI.Controllers
             _jobRepository = jobRepository;
         }
 
+        /*
         //GET: api/jobs/load
         [HttpGet("load/{AdminKey}")]
         public async Task<IActionResult> GetLoad(string AdminKey)
@@ -35,6 +39,7 @@ namespace CoolJobAPI.Controllers
             }
             return NoContent();
         }
+        */
 
         //GET: api/Jobs
         [HttpGet]
@@ -97,11 +102,11 @@ namespace CoolJobAPI.Controllers
             return NoContent();
         }
         */
-  
+
         //POST: api/Jobs
-        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostJob(Job job, string userId)
         {
             var addedJob = await _jobRepository.AddNewJob(job, userId);
 

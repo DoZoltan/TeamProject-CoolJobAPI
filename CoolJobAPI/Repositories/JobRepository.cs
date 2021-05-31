@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using CoolJobAPI.Interfaces;
 
 namespace CoolJobAPI.Models
 {
@@ -18,6 +19,7 @@ namespace CoolJobAPI.Models
             _context = context;
         }
 
+        /*
         public async Task<bool> ClearDB()
         {
             bool clearWasSuccessful = true;
@@ -90,8 +92,8 @@ namespace CoolJobAPI.Models
                 ProfilePicture = "picture",
                 BirthDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,
-                Password = "admin1234",
-                PasswordSalt = "sugar",
+                //Password = "admin1234",
+                //PasswordSalt = "sugar",
             }; // just for try to use user for jobs
 
             try
@@ -115,7 +117,7 @@ namespace CoolJobAPI.Models
             return loadWasSuccessful;
 
         }
-
+        */
         public async Task<IEnumerable<Job>> GetJobs()
         {
             return await _context.Jobs.ToListAsync();
@@ -139,7 +141,7 @@ namespace CoolJobAPI.Models
             return await _context.Jobs.Take(correctPageNum * 10).ToListAsync();    //AsAsyncEnumerable();
         }
 
-        public async Task<Job> AddNewJob(Job job, int userId)
+        public async Task<Job> AddNewJob(Job job, string userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
             job.User = user;

@@ -52,52 +52,52 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         }
 
         [Test] //GetFavorites() should return empty collection if the provided user ID is not exists
-        public void TestGetFavoritesForNonExistentUserId()
+        public async void TestGetFavoritesForNonExistentUserId()
         {
 
             int nonExistentUserId = 11;
             int expectedCollectionSize = 0;
 
-            var favorite = favoriteRepository.GetFavorites(nonExistentUserId).ToList();
+            var favorite = await favoriteRepository.GetFavorites(nonExistentUserId);
 
-            Assert.AreEqual(expectedCollectionSize, favorite.Count);
+            Assert.AreEqual(expectedCollectionSize, favorite.ToList().Count);
         }
 
         [Test] //GetFavorites() should return empty collection if the user is don't have any favorite
-        public void TestGetFavoritesIfTheUserNotHaveFavorites()
+        public async void TestGetFavoritesIfTheUserNotHaveFavorites()
         {
             int userId = 1;
             int expectedCollectionSize = 0;
 
-            var favorite = favoriteRepository.GetFavorites(userId).ToList();
+            var favorite = await favoriteRepository.GetFavorites(userId);
 
-            Assert.AreEqual(expectedCollectionSize, favorite.Count);
+            Assert.AreEqual(expectedCollectionSize, favorite.ToList().Count);
         }
 
         [Test] //GetFavorites() should return a collection with one favorite if the user have only one favorite
-        public void TestGetFavoritesIfTheUserHaveOneFavorite()
+        public async void TestGetFavoritesIfTheUserHaveOneFavorite()
         {
             int userId = 2;
             int expectedCollectionSize = 1;
 
-            var favorite = favoriteRepository.GetFavorites(userId).ToList();
+            var favorite = await favoriteRepository.GetFavorites(userId);
 
-            Assert.AreEqual(expectedCollectionSize, favorite.Count);
+            Assert.AreEqual(expectedCollectionSize, favorite.ToList().Count);
         }
 
         [Test] //GetFavorites() should return a collection of favorites if the user have more than one favorite
-        public void TestGetFavoritesIfTheUserHaveMoreFavorites()
+        public async void TestGetFavoritesIfTheUserHaveMoreFavorites()
         {
             int userId = 3;
             int expectedCollectionSize = 2;
 
-            var favorite = favoriteRepository.GetFavorites(userId).ToList();
+            var favorite = await favoriteRepository.GetFavorites(userId);
 
-            Assert.AreEqual(expectedCollectionSize, favorite.Count);
+            Assert.AreEqual(expectedCollectionSize, favorite.ToList().Count);
         }
 
         [Test] //After AddToFavorites() method called then the new favorite should appear in the database
-        public void TestAddToFavorites()
+        public async void TestAddToFavorites()
         {
             int userId = 4;
             int expectedCollectionSize = 1;
@@ -105,9 +105,9 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
 
             favoriteRepository.AddToFavorites(theIdOfTheSelectedJob, userId);
 
-            var favorite = favoriteRepository.GetFavorites(userId).ToList();
+            var favorite = await favoriteRepository.GetFavorites(userId);
 
-            Assert.AreEqual(expectedCollectionSize, favorite.Count);
+            Assert.AreEqual(expectedCollectionSize, favorite.ToList().Count);
         }
 
         [Test] //AddToFavorites() method should return false if it get wrong (non existed) user ID 
@@ -147,7 +147,7 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
         }
 
         [Test] //GetFavId() method should return the ID of the favorite what the specific user have 
-        public void TestGetFavId()
+        public async void TestGetFavId()
         {
             User mockUser5 = new User { Id = 9, UserName = "mock" };
             Job mockJob5 = new Job { User = mockUser5 }; // the ID will be 3
@@ -159,19 +159,19 @@ namespace CoolJobAPI.UnitTests.RepositoryTests
             int expectedResult = 999;
             int idOfThdJob = 3;
 
-            int result = favoriteRepository.GetFavId(idOfThdJob, userId);
+            int result = await favoriteRepository.GetFavId(idOfThdJob, userId);
 
             Assert.AreEqual(expectedResult, result);
         }
 
         [Test] //GetFavId() method should return -1 if it can't find the favorite
-        public void TestIfGetFavIdGetNonexistedUserId()
+        public async void TestIfGetFavIdGetNonexistedUserId()
         {
             int userId = 77;
             int expectedResult = -1;
             int idOfThdJob = 5;
 
-            int result = favoriteRepository.GetFavId(idOfThdJob, userId);
+            int result = await favoriteRepository.GetFavId(idOfThdJob, userId);
 
             Assert.AreEqual(expectedResult, result);
         }

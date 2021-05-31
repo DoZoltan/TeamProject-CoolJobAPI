@@ -34,49 +34,57 @@ namespace CoolJobAPI.UnitTests.ControllersTest
         }
 
         [Test]
-        public void TestGetFavoriteJobsSuccess()
+        public async void TestGetFavoriteJobsSuccess()
         {
             Job job = new Job { Title = "mocked" };
             context.Add(job);
             context.SaveChanges();
             _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJobs(11).Value;
+            var favJob = await _favoritesController.GetFavoriteJobs(11);
+
+            var result = favJob.Value;
 
             Assert.AreEqual(context.Jobs.ToList(), result);
         }
 
         [Test]
-        public void TestGetFavoriteJobsContextEmpty()
+        public async void TestGetFavoriteJobsContextEmpty()
         {
             ClearDB();
             _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJobs(11).Value;
+            var favJob = await _favoritesController.GetFavoriteJobs(11);
+
+            var result = favJob.Value;
 
             Assert.AreEqual(context.Jobs.ToList(), result);
         }
 
         [Test]
-        public void TestGetFavoriteJobIfIdExist()
+        public async void TestGetFavoriteJobIfIdExist()
         {
             Job job = new Job { Type = "favorite" };
             context.Add(job);
             context.SaveChanges();
             _favoriteRepository.GetFavorites(1).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJob(1,1).Value;
+            var favJob = await _favoritesController.GetFavoriteJob(1,1);
+
+            var result = favJob.Value;
 
             Assert.AreEqual(job, result);
         }
 
         [Test]
-        public void TestGetFavoriteJobIfIdNotExist()
+        public async void TestGetFavoriteJobIfIdNotExist()
         {
             ClearDB();
             _favoriteRepository.GetFavorites(11).Returns(context.Jobs);
 
-            var result = _favoritesController.GetFavoriteJob(2, 11).Value;
+            var favJob = await _favoritesController.GetFavoriteJob(2, 11);
+
+            var result = favJob.Value;
 
             Assert.AreEqual(null, result);
         }

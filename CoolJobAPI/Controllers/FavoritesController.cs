@@ -6,9 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoolJobAPI.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CoolJobAPI.Interfaces;
+using System.Security.Claims;
 
 namespace CoolJobAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] // with this we only have access to the favorites if we logged in
     [Route("api/[controller]")]
     [ApiController]
     public class FavoritesController : ControllerBase
@@ -22,8 +27,14 @@ namespace CoolJobAPI.Controllers
 
         // Get favorites by user ID (As a user I want to see all of my favorites)
         [HttpGet("{userId}")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetFavoriteJobs(int userId)
+        public async Task<ActionResult<IEnumerable<Job>>> GetFavoriteJobs(string userId)
         {
+            // We don't have to send the user ID where we use [Authorize] because we can get the user informations
+            // from the token what we have set in the token claims
+            string user_id = HttpContext.User.FindFirstValue("Id");
+            string email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            string name = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
+
             var favorites = await _favoriteRepository.GetFavorites(userId);
             
             if (favorites == null || !favorites.Any())
@@ -36,7 +47,7 @@ namespace CoolJobAPI.Controllers
 
         // Get a specific favorite job from the user (As a user I want to get a job from my favorites and see the details of it)
         [HttpGet("{jobId}/{userId}")]
-        public async Task<ActionResult<Job>> GetFavoriteJob(int jobId, int userId)
+        public async Task<ActionResult<Job>> GetFavoriteJob(int jobId, string userId)
         {
             var favoriteJob = await _favoriteRepository.GetFavoriteJob(jobId, userId);
 
@@ -50,7 +61,7 @@ namespace CoolJobAPI.Controllers
 
         // Add a new job to the user's favorites
         [HttpPost]
-        public async Task<ActionResult<Job>> PostFavoriteJob(Job job, int userId)
+        public async Task<ActionResult<Job>> PostFavoriteJob(Job job, string userId)
         {
             var wasSuccessful = await _favoriteRepository.AddToFavorites(job.Id, userId);
 
@@ -60,12 +71,11 @@ namespace CoolJobAPI.Controllers
             }
 
             return BadRequest();
-            
         }
 
         // Delete a specific job from the user's favorites
         [HttpDelete("{jobId}/{userId}")]
-        public async Task<IActionResult> DeleteFavoriteJob(int jobId, int userId)
+        public async Task<IActionResult> DeleteFavoriteJob(int jobId, string userId)
         {
             // Get the favorite id by the job and user id
             var favId = await _favoriteRepository.GetFavId(jobId, userId);
