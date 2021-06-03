@@ -114,7 +114,7 @@ namespace CoolJobAPI.Controllers
         */
 
         //POST: api/Jobs
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<ActionResult<Job>> PostJob(Job job, string userId)
         {

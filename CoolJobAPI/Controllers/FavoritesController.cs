@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace CoolJobAPI.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] // with this we only have access to the favorites if we logged in
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] // with this we only have access to the favorites if we logged in
     [Route("api/[controller]")]
     [ApiController]
     public class FavoritesController : ControllerBase
