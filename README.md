@@ -24,7 +24,7 @@
 - NSubstitute
 
 ## How to launch while it is not deployed
-1. Download the project
+1. Download the project (use the Demo branch)
 2. Open it with an IDE (for example with Visual Studio 2019)
 3. Generate the database by the migration file (you can find it in the Migrations folder)
    - With Visual Studio 2019 you can do this with the following steps:
