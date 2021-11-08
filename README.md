@@ -1,6 +1,6 @@
 # Project name: CoolJob API
 
-## The project is still under development so maybe some of the features is not available.
+## The project is abandoned due to a new one (https://github.com/DoZoltan/WebshopAPI).
 
 ## Project description
 #### This is a ASP.Net WEB API server for our job advertisement web application.
